@@ -1,13 +1,13 @@
 package br.com.edras.picpaysimplificado.domain;
 
-public class UsuarioLojista extends Usuario {
+public class MerchantUser extends User {
 
     private String cnpj;
 
-    public UsuarioLojista() {super();}
+    public MerchantUser() {super();}
 
-    public UsuarioLojista(String nomeCompleto, String email, String senha, String cnpj) {
-        super(nomeCompleto, email, senha);
+    public MerchantUser(String name, String email, String password, String cnpj) {
+        super(name, email, password);
         this.cnpj = cnpj;
     }
 

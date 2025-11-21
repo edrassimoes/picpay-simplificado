@@ -2,16 +2,16 @@ package br.com.edras.picpaysimplificado.domain;
 
 import java.util.Date;
 
-public class Transacao {
+public class Transaction {
 
     private Double value;
-    private Usuario payer;
-    private Usuario payee;
+    private User payer;
+    private User payee;
     private Date date;
 
-    public Transacao() {}
+    public Transaction() {}
 
-    public Transacao(Double value, Usuario payer, Usuario payee, Date date) {
+    public Transaction(Double value, User payer, User payee, Date date) {
         this.value = value;
         this.payer = payer;
         this.payee = payee;
@@ -26,19 +26,19 @@ public class Transacao {
         this.value = value;
     }
 
-    public Usuario getPayer() {
+    public User getPayer() {
         return payer;
     }
 
-    public void setPayer(Usuario payer) {
+    public void setPayer(User payer) {
         this.payer = payer;
     }
 
-    public Usuario getPayee() {
+    public User getPayee() {
         return payee;
     }
 
-    public void setPayee(Usuario payee) {
+    public void setPayee(User payee) {
         this.payee = payee;
     }
 

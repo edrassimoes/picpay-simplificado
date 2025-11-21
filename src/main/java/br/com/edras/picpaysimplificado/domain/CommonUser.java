@@ -1,13 +1,13 @@
 package br.com.edras.picpaysimplificado.domain;
 
-public class UsuarioComum extends Usuario {
+public class CommonUser extends User {
 
     private String cpf;
 
-    public UsuarioComum() {super();}
+    public CommonUser() {super();}
 
-    public UsuarioComum(String nomeCompleto, String email, String senha, String cpf) {
-        super(nomeCompleto, email, senha);
+    public CommonUser(String name, String email, String password, String cpf) {
+        super(name, email, password);
         this.cpf = cpf;
     }
 
