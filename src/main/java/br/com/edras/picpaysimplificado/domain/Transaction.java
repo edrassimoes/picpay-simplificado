@@ -1,21 +1,43 @@
 package br.com.edras.picpaysimplificado.domain;
 
-import java.util.Date;
+import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+@Entity
 public class Transaction {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Double value;
+
+    @ManyToOne
+    @JoinColumn(name = "payer_id")
     private User payer;
+
+    @ManyToOne
+    @JoinColumn(name = "payee_id")
     private User payee;
-    private Date date;
+
+    private LocalDateTime timestamp;
 
     public Transaction() {}
 
-    public Transaction(Double value, User payer, User payee, Date date) {
+    public Transaction(Double value, User payer, User payee, LocalDateTime timestamp) {
         this.value = value;
         this.payer = payer;
         this.payee = payee;
-        this.date = date;
+        this.timestamp = timestamp;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Double getValue() {
@@ -42,12 +64,24 @@ public class Transaction {
         this.payee = payee;
     }
 
-    public Date getDate() {
-        return date;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 }

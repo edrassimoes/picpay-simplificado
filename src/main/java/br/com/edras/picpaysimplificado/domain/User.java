@@ -1,14 +1,25 @@
 package br.com.edras.picpaysimplificado.domain;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
+
+    @Column(unique = true)
     private String email;
+
     private String password;
 
-    private Wallet wallet = new Wallet();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Wallet wallet;
 
     public User() {}
 
@@ -16,6 +27,14 @@ public abstract class User {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -54,12 +73,12 @@ public abstract class User {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(email, user.email);
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(email);
+        return Objects.hashCode(id);
     }
 
 }
