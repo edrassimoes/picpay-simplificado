@@ -15,13 +15,32 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    // CREATE
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    // READ
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
     public User findUserById(Long id) {
-        // To-Do: trocar null por Exception
         return userRepository.findById(id).orElse(null);
+    }
+
+    // UPDATE
+    public User updateUser(Long id, User user) {
+        User existingUser = userRepository.findById(id).orElse(null);
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        return userRepository.save(existingUser);
+    }
+
+    // DELETE
+    public void deleteUserById(Long id) {
+        userRepository.findById(id).orElse(null);
+        userRepository.deleteById(id);
     }
 
 }
