@@ -1,9 +1,11 @@
 package br.com.edras.picpaysimplificado.domain;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
+@DiscriminatorValue("MERCHANT")
 public class MerchantUser extends User {
 
     @Column(unique = true)
