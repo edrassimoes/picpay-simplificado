@@ -6,12 +6,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "tb_transactions")
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Double value;
+    private Double amount;
 
     @ManyToOne
     @JoinColumn(name = "payer_id")
@@ -25,8 +26,8 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Double value, User payer, User payee, LocalDateTime timestamp) {
-        this.value = value;
+    public Transaction(Double amount, User payer, User payee, LocalDateTime timestamp) {
+        this.amount = amount;
         this.payer = payer;
         this.payee = payee;
         this.timestamp = timestamp;
@@ -40,12 +41,12 @@ public class Transaction {
         this.id = id;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getAmount() {
+        return amount;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public User getPayer() {
