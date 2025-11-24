@@ -1,5 +1,6 @@
 package br.com.edras.picpaysimplificado.domain;
 
+import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -82,5 +83,7 @@ public abstract class User {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    public abstract UserType getUserType();
 
 }

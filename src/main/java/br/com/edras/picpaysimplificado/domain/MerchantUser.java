@@ -1,5 +1,6 @@
 package br.com.edras.picpaysimplificado.domain;
 
+import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -24,6 +25,11 @@ public class MerchantUser extends User {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    @Override
+    public UserType getUserType() {
+        return UserType.MERCHANT;
     }
 
 }
