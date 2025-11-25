@@ -10,6 +10,8 @@ import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
 import br.com.edras.picpaysimplificado.exception.DocumentAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.EmailAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.UserNotFoundException;
+import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
+import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +23,13 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MerchantUserRepository merchantUserRepository;
+    private final CommonUserRepository commonUserRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository) {
         this.userRepository = userRepository;
+        this.merchantUserRepository = merchantUserRepository;
+        this.commonUserRepository = commonUserRepository;
     }
 
     @Transactional
@@ -40,7 +46,7 @@ public class UserService {
                 throw new IllegalArgumentException("CPF é obrigatório para usuários comuns");
             }
 
-            if (userRepository.existsByCpf(dto.getCpf())) {
+            if (commonUserRepository.existsByCpf(dto.getCpf())) {
              throw new DocumentAlreadyExistsException(dto.getCpf());
             }
             user = new CommonUser(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getCpf());
@@ -51,7 +57,7 @@ public class UserService {
                 throw new IllegalArgumentException("CNPJ é obrigatório para usuários lojistas");
             }
 
-            if (userRepository.existsByCnpj(dto.getCnpj())) {
+            if (merchantUserRepository.existsByCnpj(dto.getCnpj())) {
                  throw new DocumentAlreadyExistsException(dto.getCnpj());
             }
 
