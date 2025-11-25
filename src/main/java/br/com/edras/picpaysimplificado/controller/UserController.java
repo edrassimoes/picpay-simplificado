@@ -21,28 +21,24 @@ public class UserController {
         this.userService = userService;
     }
 
-    // CREATE
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
         UserResponseDTO createdUser = userService.createUser(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    // READ ALL
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
         List<UserResponseDTO> users = userService.findAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    // READ BY ID
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> findUserById(@PathVariable Long id) {
         UserResponseDTO user = userService.findUserById(id);
         return ResponseEntity.ok(user);
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long id,
@@ -51,7 +47,6 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
