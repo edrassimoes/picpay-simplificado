@@ -1,7 +1,12 @@
 package br.com.edras.picpaysimplificado.dto.user;
 
+import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.validation.CNPJ;
+import br.com.edras.picpaysimplificado.validation.CPF;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class UserRequestDTO {
 
@@ -15,16 +20,18 @@ public class UserRequestDTO {
     @NotBlank(message = "Senha é obrigatória")
     private String password;
 
-    @NotBlank(message = "Tipo de usuário é obrigatório")
-    private String userType;
+    @NotNull(message = "Tipo de usuário é obrigatório")
+    private UserType userType;
 
+    @CPF
     private String cpf;
 
+    @CNPJ
     private String cnpj;
 
     public UserRequestDTO() {}
 
-    public UserRequestDTO(String name, String email, String password, String userType, String cpf, String cnpj) {
+    public UserRequestDTO(String name, String email, String password, UserType userType, String cpf, String cnpj) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -57,11 +64,11 @@ public class UserRequestDTO {
         this.password = password;
     }
 
-    public String getUserType() {
+    public UserType getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(UserType userType) {
         this.userType = userType;
     }
 
