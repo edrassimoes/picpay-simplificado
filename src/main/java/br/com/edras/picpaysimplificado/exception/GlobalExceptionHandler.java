@@ -1,5 +1,13 @@
 package br.com.edras.picpaysimplificado.exception;
 
+import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
+import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
+import br.com.edras.picpaysimplificado.exception.user.InvalidUserTypeException;
+import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
+import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
+import br.com.edras.picpaysimplificado.exception.wallet.MerchantCannotDepositException;
+import br.com.edras.picpaysimplificado.exception.wallet.WalletNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -52,6 +60,46 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(InvalidAmountException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAmountException(InvalidAmountException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientBalanceException(InsufficientBalanceException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MerchantCannotDepositException.class)
+    public ResponseEntity<ErrorResponse> handleMerchantCannotDepositException(MerchantCannotDepositException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleWalletNotFoundException(WalletNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
