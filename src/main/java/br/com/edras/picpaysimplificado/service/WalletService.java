@@ -3,7 +3,11 @@ package br.com.edras.picpaysimplificado.service;
 import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.Wallet;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
-import br.com.edras.picpaysimplificado.exception.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
+import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
+import br.com.edras.picpaysimplificado.exception.wallet.MerchantCannotDepositException;
+import br.com.edras.picpaysimplificado.exception.wallet.WalletNotFoundException;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import br.com.edras.picpaysimplificado.repository.WalletRepository;
 import jakarta.transaction.Transactional;
@@ -27,7 +31,7 @@ public class WalletService {
     public Wallet getWalletByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-        Wallet wallet = user.getWalletByUserId();
+        Wallet wallet = user.getWallet();
         if (wallet == null) {
             throw new WalletNotFoundException(userId);
         }
@@ -46,7 +50,7 @@ public class WalletService {
         }
         Wallet wallet = getWalletByUserId(userId);
         if (wallet.getUser().getUserType() == UserType.MERCHANT) {
-            throw new MerchantCannotDepositException(userId);
+            throw new MerchantCannotDepositException();
         }
         wallet.setBalance(wallet.getBalance() + amount);
         walletRepository.save(wallet);
@@ -59,7 +63,7 @@ public class WalletService {
         }
         Wallet wallet = getWalletByUserId(userId);
         if (wallet.getBalance() < amount) {
-            throw new InsufficientBalanceException(userId, amount);
+            throw new InsufficientBalanceException();
         }
         wallet.setBalance(wallet.getBalance() - amount);
         walletRepository.save(wallet);
