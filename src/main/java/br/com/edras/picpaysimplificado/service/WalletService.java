@@ -54,7 +54,7 @@ public class WalletService {
             throw new MerchantCannotDepositException();
         }
         wallet.setBalance(wallet.getBalance() + amount);
-        return walletRepository.save(wallet);
+        return wallet;
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class WalletService {
             throw new InsufficientBalanceException();
         }
         wallet.setBalance(wallet.getBalance() - amount);
-        return walletRepository.save(wallet);
+        return wallet;
     }
 
 }
