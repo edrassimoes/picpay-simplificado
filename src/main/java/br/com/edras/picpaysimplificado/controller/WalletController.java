@@ -24,20 +24,20 @@ public class WalletController {
         return ResponseEntity.ok().body(new WalletResponseDTO(wallet));
     }
 
-    @PostMapping("/user/{userId}/deposit")
+    @PatchMapping("/user/{userId}/deposit")
     public ResponseEntity<WalletResponseDTO> deposit(
             @PathVariable Long userId,
             @Valid @RequestBody AmountDTO amount) {
         Wallet wallet = walletService.deposit(userId, amount.getAmount());
-        return ResponseEntity.ok().body(new WalletResponseDTO(wallet));
+        return ResponseEntity.ok(new WalletResponseDTO(wallet));
     }
 
-    @PostMapping("/user/{userId}/withdraw")
+    @PatchMapping("/user/{userId}/withdraw")
     public ResponseEntity<WalletResponseDTO> withdraw(
             @PathVariable Long userId,
             @Valid @RequestBody AmountDTO amount) {
         Wallet wallet = walletService.withdraw(userId, amount.getAmount());
-        return ResponseEntity.ok().body(new WalletResponseDTO(wallet));
+        return ResponseEntity.ok(new WalletResponseDTO(wallet));
     }
 
 }
