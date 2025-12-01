@@ -1,5 +1,6 @@
 package br.com.edras.picpaysimplificado.domain;
 
+import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,13 +25,16 @@ public class Transaction {
 
     private LocalDateTime timestamp;
 
+    private TransactionStatus status;
+
     public Transaction() {}
 
-    public Transaction(Double amount, User payer, User payee, LocalDateTime timestamp) {
+    public Transaction(Double amount, User payer, User payee, LocalDateTime timestamp, TransactionStatus status) {
         this.amount = amount;
         this.payer = payer;
         this.payee = payee;
         this.timestamp = timestamp;
+        this.status = status;
     }
 
     public Long getId() {
@@ -71,6 +75,14 @@ public class Transaction {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 
     @Override
