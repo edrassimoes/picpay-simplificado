@@ -8,6 +8,10 @@ import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceExcep
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
 import br.com.edras.picpaysimplificado.exception.wallet.MerchantCannotDepositException;
 import br.com.edras.picpaysimplificado.exception.wallet.WalletNotFoundException;
+import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
+import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
+import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotAuthorizedException;
+import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -100,6 +104,46 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(TransactionNotAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionNotAuthorizedException(TransactionNotAuthorizedException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    @ExceptionHandler(SameUserTransactionException.class)
+    public ResponseEntity<ErrorResponse> handleSameUserTransactionException(SameUserTransactionException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MerchantCannotTransferException.class)
+    public ResponseEntity<ErrorResponse> handleMerchantCannotTransferException(MerchantCannotTransferException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
