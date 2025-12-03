@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
@@ -23,7 +23,7 @@ public class TransactionController {
 
     @PostMapping
     public  ResponseEntity<TransactionDTO> createTransaction(@Valid @RequestBody Transaction transaction) {
-        TransactionDTO newTransaction = transactionService.create(transaction);
+        TransactionDTO newTransaction = transactionService.transfer(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(newTransaction);
     }
 
