@@ -3,7 +3,6 @@ package br.com.edras.picpaysimplificado.service;
 import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.Wallet;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
-import br.com.edras.picpaysimplificado.dto.wallet.WalletResponseDTO;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
@@ -25,7 +24,7 @@ public class WalletService {
         this.userRepository = userRepository;
     }
 
-    public Wallet createWallet(Wallet wallet) {
+    public Wallet createOrUpdateWallet(Wallet wallet) {
         return walletRepository.save(wallet);
     }
 
