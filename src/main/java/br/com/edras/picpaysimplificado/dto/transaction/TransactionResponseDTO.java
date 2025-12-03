@@ -5,24 +5,26 @@ import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
 
 import java.time.LocalDateTime;
 
-public class TransactionDTO {
+public class TransactionResponseDTO {
 
     private Long transactionId;
     private Long payerId;
     private String payerName;
     private Long payeeId;
     private String payeeName;
+    private Double amount;
     private LocalDateTime timestamp;
     private TransactionStatus transactionStatus;
 
-    public TransactionDTO() {}
+    public TransactionResponseDTO() {}
 
-    public TransactionDTO(Transaction transaction) {
+    public TransactionResponseDTO(Transaction transaction) {
         this.transactionId = transaction.getId();
         this.payerId = transaction.getPayer().getId();
         this.payerName = transaction.getPayer().getName();
         this.payeeId = transaction.getPayee().getId();
         this.payeeName = transaction.getPayee().getName();
+        this.amount = transaction.getAmount();
         this.timestamp = transaction.getTimestamp();
         this.transactionStatus = transaction.getStatus();
     }
@@ -65,6 +67,14 @@ public class TransactionDTO {
 
     public void setPayeeName(String payeeName) {
         this.payeeName = payeeName;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public LocalDateTime getTimestamp() {
