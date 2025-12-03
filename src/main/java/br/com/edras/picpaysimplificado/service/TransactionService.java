@@ -10,13 +10,16 @@ import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.Wallet;
 import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
-import br.com.edras.picpaysimplificado.dto.transaction.TransactionDTO;
+import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
+import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
 import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotAuthorizedException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
+import br.com.edras.picpaysimplificado.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -27,41 +30,35 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
     private final WalletService walletService;
     private final AuthorizerClient authorizerClient;
     private final NotificationClient notificationClient;
 
-    public TransactionService(TransactionRepository transactionRepository, WalletService walletService, 
-                             AuthorizerClient authorizerClient, NotificationClient notificationClient) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, WalletService walletService, AuthorizerClient authorizerClient, NotificationClient notificationClient) {
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
         this.walletService = walletService;
         this.authorizerClient = authorizerClient;
         this.notificationClient = notificationClient;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+
     private void merchantDeposit(MerchantUser merchantUser, Double amount) {
-        if (amount <= 0){
-            throw new InvalidAmountException(amount);
-        }
         Wallet wallet = walletService.getWalletByUserId(merchantUser.getId());
         wallet.setBalance(wallet.getBalance() + amount);
         walletService.createOrUpdateWallet(wallet);
     }
 
-    private void validateTransfer(Transaction transaction) {
-        // Validar amount
-        if (transaction.getAmount() <= 0) {
-            throw new InvalidAmountException(transaction.getAmount());
-        }
-
-        // Validar payer != payee
-        if (transaction.getPayer().getId().equals(transaction.getPayee().getId())) {
-            throw new SameUserTransactionException();
-        }
-
-        // Validar que payer não é MERCHANT
-        if (transaction.getPayer().getUserType() == UserType.MERCHANT) {
-            throw new MerchantCannotTransferException(transaction.getPayer().getId());
+    private void sendNotification(Transaction transaction) {
+        try {
+            String message = String.format("Transação de R$ %.2f realizada com sucesso", 
+                                          transaction.getAmount());
+            NotificationRequest request = new NotificationRequest(message);
+            notificationClient.notify(request);
+        } catch (Exception e) {
+            // System.err.println("Falha ao enviar notificação: " + e.getMessage());
         }
     }
 
@@ -77,31 +74,35 @@ public class TransactionService {
         }
     }
 
-    private void sendNotification(Transaction transaction) {
-        try {
-            String message = String.format("Transação de R$ %.2f realizada com sucesso", 
-                                          transaction.getAmount());
-            NotificationRequest request = new NotificationRequest(message);
-            notificationClient.notify(request);
-        } catch (Exception e) {
-            // Log mas não quebra a transação
-            System.err.println("Falha ao enviar notificação: " + e.getMessage());
-        }
-    }
+    // -----------------------------------------------------------------------------------------------------------------
 
     @Transactional
-    public TransactionDTO transfer(Transaction transaction) {
-        // 1. Validar
-        validateTransfer(transaction);
+    public TransactionResponseDTO transfer(TransactionRequestDTO dto) {
 
-        // 2. Setar status inicial e timestamp
-        transaction.setStatus(TransactionStatus.PENDING);
+        if (dto.getPayerId().equals(dto.getPayeeId())) {
+            throw new SameUserTransactionException();
+        }
+
+        User payer = userRepository.findById(dto.getPayerId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getPayerId()));
+
+        if (payer.getUserType() == UserType.MERCHANT) {
+            throw new MerchantCannotTransferException(payer.getId());
+        }
+
+        User payee = userRepository.findById(dto.getPayeeId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getPayeeId()));
+
+        // Cria a transação no banco.
+        Transaction transaction = new Transaction();
+        transaction.setAmount(dto.getAmount());
+        transaction.setPayer(payer);
+        transaction.setPayee(payee);
         transaction.setTimestamp(LocalDateTime.now());
-
-        // 3. Salvar com status PENDING
+        transaction.setStatus(TransactionStatus.PENDING);
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        // 4. Consultar autorizador
+        // API de autenticação.
         TransactionStatus authStatus = checkAuthorization();
         savedTransaction.setStatus(authStatus);
 
@@ -110,45 +111,33 @@ public class TransactionService {
             throw new TransactionNotAuthorizedException();
         }
 
-        // 5. Realizar transferência
-        User payer = savedTransaction.getPayer();
-        User payee = savedTransaction.getPayee();
-        Double amount = savedTransaction.getAmount();
-
-        walletService.withdraw(payer.getId(), amount);
+        // Realiza a transação.
+        walletService.withdraw(payer.getId(), dto.getAmount());
 
         if (payee instanceof MerchantUser) {
-            merchantDeposit((MerchantUser) payee, amount);
+            merchantDeposit((MerchantUser) payee, dto.getAmount());
         } else {
-            walletService.deposit(payee.getId(), amount);
+            walletService.deposit(payee.getId(), dto.getAmount());
         }
 
-        // 6. Finalizar
         savedTransaction.setStatus(TransactionStatus.COMPLETED);
         Transaction completedTransaction = transactionRepository.save(savedTransaction);
 
-        // 7. Notificar (não quebra se falhar)
+        // API de notificação.
         sendNotification(completedTransaction);
 
-        return new TransactionDTO(completedTransaction);
+        return new TransactionResponseDTO(completedTransaction);
     }
 
-    public TransactionDTO findById(Long id) {
+    public TransactionResponseDTO findById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new TransactionNotFoundException(id));
-        return new TransactionDTO(transaction);
+        return new TransactionResponseDTO(transaction);
     }
 
-    public List<TransactionDTO> findTransactionsByUserId(Long userId) {
+    public List<TransactionResponseDTO> findTransactionsByUserId(Long userId) {
         List<Transaction> transactions = transactionRepository.findByUserId(userId);
-        return transactions.stream().map(TransactionDTO::new).toList();
-    }
-
-    public void delete(Long id) {
-        if (!transactionRepository.existsById(id)) {
-            throw new TransactionNotFoundException(id);
-        }
-        transactionRepository.deleteById(id);
+        return transactions.stream().map(TransactionResponseDTO::new).toList();
     }
 
 }
