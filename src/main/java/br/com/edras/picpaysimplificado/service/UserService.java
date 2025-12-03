@@ -3,6 +3,7 @@ package br.com.edras.picpaysimplificado.service;
 import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.domain.MerchantUser;
 import br.com.edras.picpaysimplificado.domain.User;
+import br.com.edras.picpaysimplificado.domain.Wallet;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
@@ -25,11 +26,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final MerchantUserRepository merchantUserRepository;
     private final CommonUserRepository commonUserRepository;
+    private final WalletService walletService;
 
-    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository) {
+    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository, WalletService walletService) {
         this.userRepository = userRepository;
         this.merchantUserRepository = merchantUserRepository;
         this.commonUserRepository = commonUserRepository;
+        this.walletService = walletService;
     }
 
     @Transactional
@@ -65,6 +68,12 @@ public class UserService {
         }
 
         User savedUser = userRepository.save(user);
+
+        Wallet wallet = new Wallet();
+        wallet.setUser(savedUser);
+        wallet.setBalance(0.0);
+        walletService.createOrUpdateWallet(wallet);
+
         return new UserResponseDTO(savedUser);
     }
 
