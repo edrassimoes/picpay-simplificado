@@ -1,9 +1,6 @@
 package br.com.edras.picpaysimplificado.exception;
 
-import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.InvalidUserTypeException;
-import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
 import br.com.edras.picpaysimplificado.exception.wallet.MerchantCannotDepositException;
@@ -165,6 +162,16 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(UserHasTransactionsException.class)
+    public ResponseEntity<ErrorResponse> handleUserHasTransactionsException(UserHasTransactionsException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     public static class ErrorResponse {
