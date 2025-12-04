@@ -30,3 +30,8 @@ VALUES (150.00, 2, 1, '2024-12-03T11:20:00', 'FAILED');
 
 INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status) 
 VALUES (25.00, 1, 5, '2024-12-04T08:00:00', 'PENDING');
+
+-- Usuário sem transações para testes de exclusão
+INSERT INTO tb_users (user_type, name, email, password, cpf)
+VALUES ('COMMON', 'Usuário Sem Transação', 'semtransacao@email.com', 'teste123', '22233344455');
+INSERT INTO tb_wallets (balance, user_id) VALUES (300.00, 6);
