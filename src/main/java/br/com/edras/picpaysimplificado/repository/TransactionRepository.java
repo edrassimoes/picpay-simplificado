@@ -13,4 +13,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT t FROM Transaction t WHERE t.payer.id = :userId OR t.payee.id = :userId")
     List<Transaction> findByUserId(Long userId);
 
+    boolean existsByPayerId(Long userId);
+    boolean existsByPayeeId(Long userId);
+
 }

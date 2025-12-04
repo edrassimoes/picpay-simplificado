@@ -10,9 +10,11 @@ import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
 import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
+import br.com.edras.picpaysimplificado.exception.user.UserHasTransactionsException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
+import br.com.edras.picpaysimplificado.repository.TransactionRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +28,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final MerchantUserRepository merchantUserRepository;
     private final CommonUserRepository commonUserRepository;
+    private final TransactionRepository transactionRepository;
     private final WalletService walletService;
 
-    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository, WalletService walletService) {
+    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository, TransactionRepository transactionRepository, WalletService walletService) {
         this.userRepository = userRepository;
         this.merchantUserRepository = merchantUserRepository;
         this.commonUserRepository = commonUserRepository;
+        this.transactionRepository = transactionRepository;
         this.walletService = walletService;
     }
 
@@ -119,6 +123,13 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);
         }
+
+        if (transactionRepository.existsByPayerId(id)
+                || transactionRepository.existsByPayeeId(id)) {
+
+            throw new UserHasTransactionsException();
+        }
+
         userRepository.deleteById(id);
     }
 
