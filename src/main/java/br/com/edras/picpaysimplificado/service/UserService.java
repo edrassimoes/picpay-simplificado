@@ -8,10 +8,7 @@ import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
-import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.UserHasTransactionsException;
-import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
@@ -56,6 +53,11 @@ public class UserService {
             if (commonUserRepository.existsByCpf(dto.getCpf())) {
              throw new DocumentAlreadyExistsException(dto.getCpf());
             }
+
+            if (dto.getCnpj() != null || !dto.getCnpj().isBlank()) {
+                throw new InvalidDocumentTypeException("CNPJ não é permitido a usuários comuns");
+            }
+
             user = new CommonUser(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getCpf());
 
         } else {
@@ -66,6 +68,10 @@ public class UserService {
 
             if (merchantUserRepository.existsByCnpj(dto.getCnpj())) {
                  throw new DocumentAlreadyExistsException(dto.getCnpj());
+            }
+
+            if (dto.getCpf() != null || !dto.getCpf().isBlank()) {
+                throw new InvalidDocumentTypeException("CPF não é permitido a usuários lojistas");
             }
 
             user = new MerchantUser(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getCnpj());
