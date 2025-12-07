@@ -54,7 +54,7 @@ public class UserService {
              throw new DocumentAlreadyExistsException(dto.getCpf());
             }
 
-            if (dto.getCnpj() != null || !dto.getCnpj().isBlank()) {
+            if (dto.getCnpj() != null && !dto.getCnpj().isBlank()) {
                 throw new InvalidDocumentTypeException("CNPJ não é permitido a usuários comuns");
             }
 
@@ -70,7 +70,7 @@ public class UserService {
                  throw new DocumentAlreadyExistsException(dto.getCnpj());
             }
 
-            if (dto.getCpf() != null || !dto.getCpf().isBlank()) {
+            if (dto.getCpf() != null && !dto.getCpf().isBlank()) {
                 throw new InvalidDocumentTypeException("CPF não é permitido a usuários lojistas");
             }
 
