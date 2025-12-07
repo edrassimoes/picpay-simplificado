@@ -588,6 +588,52 @@
 			"response": []
 		},
 		{
+			"name": "GET USER BY NON-EXISTENT ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 404 ao buscar usuário inexistente\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Mensagem de erro deve indicar usuário não encontrado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"não encontrado\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/99",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"99"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "UPDATE COMMON USER",
 			"request": {
 				"method": "PUT",
