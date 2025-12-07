@@ -8,6 +8,38 @@
 	"item": [
 		{
 			"name": "CREATE COMMON USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Usuário COMMON criado com sucesso\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter ID do usuário\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"id\");",
+							"    pm.expect(json.id).to.be.a(\"number\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados corretos\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.name).to.eql(\"Pedro\");",
+							"    pm.expect(json.userType).to.eql(\"COMMON\");",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.not.have.property(\"password\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -36,6 +68,38 @@
 		},
 		{
 			"name": "CREATE MERCHANT USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Usuário MERCHANT criado com sucesso\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter ID do usuário\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"id\");",
+							"    pm.expect(json.id).to.be.a(\"number\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados corretos\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.name).to.eql(\"Loja do Pedro\");",
+							"    pm.expect(json.userType).to.eql(\"MERCHANT\");",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.not.have.property(\"password\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -550,6 +614,43 @@
 		},
 		{
 			"name": "GET ALL USERS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Lista de usuários retornada com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve ser um array\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Usuários devem conter campos obrigatórios\", function () {",
+							"    const json = pm.response.json();",
+							"    if (json.length > 0) {",
+							"        const user = json[0];",
+							"        pm.expect(user).to.have.property(\"id\");",
+							"        pm.expect(user).to.have.property(\"name\");",
+							"        pm.expect(user).to.have.property(\"userType\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado em nenhum usuário\", function () {",
+							"    const json = pm.response.json();",
+							"    json.forEach(user => {",
+							"        pm.expect(user).to.not.have.property(\"password\");",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -569,6 +670,39 @@
 		},
 		{
 			"name": "GET USER BY ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Usuário retornado com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados do usuário\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"id\");",
+							"    pm.expect(json).to.have.property(\"name\");",
+							"    pm.expect(json).to.have.property(\"userType\");",
+							"});",
+							"",
+							"pm.test(\"ID deve corresponder ao solicitado\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
+							"    pm.expect(json.id.toString()).to.eql(requestedId);",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.not.have.property(\"password\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -635,6 +769,37 @@
 		},
 		{
 			"name": "UPDATE COMMON USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Usuário atualizado com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados atualizados\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.name).to.eql(\"Edras\");",
+							"});",
+							"",
+							"pm.test(\"ID deve permanecer o mesmo\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
+							"    pm.expect(json.id.toString()).to.eql(requestedId);",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.not.have.property(\"password\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -664,6 +829,37 @@
 		},
 		{
 			"name": "UPDATE MERCHANT USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Usuário MERCHANT atualizado com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados atualizados\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.name).to.eql(\"Mercadinho do João\");",
+							"});",
+							"",
+							"pm.test(\"ID deve permanecer o mesmo\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
+							"    pm.expect(json.id.toString()).to.eql(requestedId);",
+							"});",
+							"",
+							"pm.test(\"Password não deve ser retornado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.not.have.property(\"password\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
