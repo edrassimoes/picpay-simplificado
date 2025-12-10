@@ -38,11 +38,6 @@ public class WalletService {
         return wallet;
     }
 
-    public Double getBalanceByUserId(Long userId) {
-        Wallet wallet = getWalletByUserId(userId);
-        return wallet.getBalance();
-    }
-
     @Transactional
     public Wallet deposit(Long userId, Double amount) {
         if (amount <= 0){
