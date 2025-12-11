@@ -17,7 +17,6 @@ import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransaction
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotAuthorizedException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
-import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import jakarta.transaction.Transactional;

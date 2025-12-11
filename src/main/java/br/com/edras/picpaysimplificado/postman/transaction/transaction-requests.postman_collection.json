@@ -1,0 +1,617 @@
+{
+	"info": {
+		"_postman_id": "ca5b690c-8831-496e-9fa7-1784dc94c535",
+		"name": "transaction-requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32899336"
+	},
+	"item": [
+		{
+			"name": "TRANSFER BETWEEN COMMON USERS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Transferência realizada com sucesso\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados da transação\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"transactionId\");",
+							"    pm.expect(json).to.have.property(\"payerId\");",
+							"    pm.expect(json).to.have.property(\"payerName\");",
+							"    pm.expect(json).to.have.property(\"payeeId\");",
+							"    pm.expect(json).to.have.property(\"payeeName\");",
+							"    pm.expect(json).to.have.property(\"amount\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"    pm.expect(json).to.have.property(\"transactionStatus\");",
+							"});",
+							"",
+							"pm.test(\"Status deve ser COMPLETED\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.transactionStatus).to.eql(\"COMPLETED\");",
+							"});",
+							"",
+							"pm.test(\"Valores devem corresponder ao request\", function () {",
+							"    const json = pm.response.json();",
+							"    const request = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(json.amount).to.eql(request.amount);",
+							"    pm.expect(json.payerId).to.eql(request.payerId);",
+							"    pm.expect(json.payeeId).to.eql(request.payeeId);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRANSFER FROM COMMON USERS TO MERCHANT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Transferência de usuário comum para lojista realizada com sucesso\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Status deve ser COMPLETED\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.transactionStatus).to.eql(\"COMPLETED\");",
+							"});",
+							"",
+							"pm.test(\"Payee deve ser um lojista\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.payeeId).to.exist;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": 4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SAME USER TRANSACTION",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 ao tentar transferir para si mesmo\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar transação para mesmo usuário\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"Não é possível transferir para si mesmo\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MERCHANT CANNOT TRANSFER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 403 ao lojista tentar fazer transferência\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar que lojista não pode transferir\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"Lojistas não podem realizar transferências\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 4,\n    \"payeeId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PAYER NOT FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 404 quando pagador não existe\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar usuário não encontrado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"Usuário não encontrado\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 99,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PAYEE NOT FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 404 quando beneficiário não existe\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar usuário não encontrado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"Usuário não encontrado\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": 99\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "INSUFFICIENT BALANCE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 quando saldo é insuficiente\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar saldo insuficiente\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"Saldo insuficiente\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 9000,\n    \"payerId\": 1,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRANSFER 0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 ao tentar transferir valor zero\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar valor inválido\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 0,\n    \"payerId\": 1,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRANSFER NEGATIVE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 ao tentar transferir valor negativo\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar valor inválido\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": -100,\n    \"payerId\": 1,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRANSACTION NOR AUTHORIZED",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 403 quando transação não é autorizada\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar transação não autorizada\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"não autorizada\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MISSING FIELDS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 quando campos obrigatórios estão ausentes\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem deve indicar erro de validação\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"validação\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100,\n    \"payerId\": 1,\n    \"payeeId\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
