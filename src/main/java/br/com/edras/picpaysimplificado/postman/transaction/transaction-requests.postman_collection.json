@@ -673,26 +673,19 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Transação retornada com sucesso\", function () {",
-							"    pm.response.to.have.status(200);",
+							"pm.test(\"Deve retornar 404 quando transação não existe\", function () {",
+							"    pm.response.to.have.status(404);",
 							"});",
 							"",
-							"pm.test(\"Response deve conter dados da transação\", function () {",
+							"pm.test(\"Mensagem deve indicar transação não encontrada\", function () {",
 							"    const json = pm.response.json();",
-							"    pm.expect(json).to.have.property(\"transactionId\");",
-							"    pm.expect(json).to.have.property(\"payerId\");",
-							"    pm.expect(json).to.have.property(\"payerName\");",
-							"    pm.expect(json).to.have.property(\"payeeId\");",
-							"    pm.expect(json).to.have.property(\"payeeName\");",
-							"    pm.expect(json).to.have.property(\"amount\");",
+							"    pm.expect(json.message).to.include(\"Transação não encontrada\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
 							"    pm.expect(json).to.have.property(\"timestamp\");",
-							"    pm.expect(json).to.have.property(\"transactionStatus\");",
-							"});",
-							"",
-							"pm.test(\"ID deve corresponder ao solicitado\", function () {",
-							"    const json = pm.response.json();",
-							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
-							"    pm.expect(json.transactionId.toString()).to.eql(requestedId);",
 							"});"
 						],
 						"type": "text/javascript",
@@ -705,7 +698,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/transactions/1",
+					"raw": "http://localhost:8080/transactions/99",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -713,7 +706,115 @@
 					"port": "8080",
 					"path": [
 						"transactions",
+						"99"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET TRANSACTION BY USER ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Transações do usuário retornadas com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve ser um array\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.be.an(\"array\");",
+							"});",
+							"",
+							"pm.test(\"Transações devem conter campos obrigatórios\", function () {",
+							"    const json = pm.response.json();",
+							"    if (json.length > 0) {",
+							"        const transaction = json[0];",
+							"        pm.expect(transaction).to.have.property(\"transactionId\");",
+							"        pm.expect(transaction).to.have.property(\"payerId\");",
+							"        pm.expect(transaction).to.have.property(\"payerName\");",
+							"        pm.expect(transaction).to.have.property(\"payeeId\");",
+							"        pm.expect(transaction).to.have.property(\"payeeName\");",
+							"        pm.expect(transaction).to.have.property(\"amount\");",
+							"        pm.expect(transaction).to.have.property(\"timestamp\");",
+							"        pm.expect(transaction).to.have.property(\"transactionStatus\");",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Todas as transações devem envolver o usuário solicitado\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedUserId = parseInt(pm.request.url.getPath().split(\"/\").pop());",
+							"    json.forEach(transaction => {",
+							"        const isInvolved = transaction.payerId === requestedUserId || ",
+							"                          transaction.payeeId === requestedUserId;",
+							"        pm.expect(isInvolved).to.be.true;",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/transactions/users/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions",
+						"users",
 						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET TRANSACTION RETURNS EMPTY LIST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 200 para usuário sem transações\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve ser um array vazio\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.be.an(\"array\");",
+							"    pm.expect(json).to.have.lengthOf(0);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/transactions/users/6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions",
+						"users",
+						"6"
 					]
 				}
 			},
