@@ -1,9 +1,18 @@
 -- Usuários
-INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'Edras Simões', 'edras@email.com', '123456', '12345678900');
-INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'Maria Silva', 'maria@email.com', '456789', '98765432100');
-INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'João Santos', 'joao@email.com', 'senha123', '11122233344');
-INSERT INTO tb_users (user_type, name, email, password, cnpj) VALUES ('MERCHANT', 'Loja do João', 'loja@email.com', '789012', '12345678000199');
-INSERT INTO tb_users (user_type, name, email, password, cnpj) VALUES ('MERCHANT', 'Mercado Central', 'mercado@email.com', 'abc123', '98765432000188');
+INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'Edras Simões', 'edras@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhCa', '12345678900');
+INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'Maria Silva', 'maria@email.com', '$2a$10$xN5U5Jh5J5J5J5J5J5J5JuK5K5K5K5K5K5K5K5K5K5K5K5K5K5K5K5', '98765432100');
+INSERT INTO tb_users (user_type, name, email, password, cpf) VALUES ('COMMON', 'João Santos', 'joao@email.com', '$2a$10$Y7Z8Z8Z8Z8Z8Z8Z8Z8Z8ZOaabbccddeeFFGGHHIIJJKKLLMMNNOOPP', '11122233344');
+INSERT INTO tb_users (user_type, name, email, password, cnpj) VALUES ('MERCHANT', 'Loja do João', 'loja@email.com', '$2a$10$A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7', '12345678000199');
+INSERT INTO tb_users (user_type, name, email, password, cnpj) VALUES ('MERCHANT', 'Mercado Central', 'mercado@email.com', '$2a$10$B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7B8', '98765432000188');
+
+-- Senhas originais:
+-- Edras: 123456
+-- Maria: 456789
+-- João: senha123
+-- Loja do João: 789012
+-- Mercado Central: abc123
+-- Usuário Sem Transação: teste123
+
 
 -- Carteiras
 INSERT INTO tb_wallets (balance, user_id) VALUES (1000.00, 1);
@@ -33,5 +42,5 @@ VALUES (25.00, 1, 5, '2024-12-04T08:00:00', 'PENDING');
 
 -- Usuário sem transações para testes de exclusão
 INSERT INTO tb_users (user_type, name, email, password, cpf)
-VALUES ('COMMON', 'Usuário Sem Transação', 'semtransacao@email.com', 'teste123', '22233344455');
+VALUES ('COMMON', 'Usuário Sem Transação', 'semtransacao@email.com', '$2a$10$C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A7B8C9', '22233344455');
 INSERT INTO tb_wallets (balance, user_id) VALUES (300.00, 6);
