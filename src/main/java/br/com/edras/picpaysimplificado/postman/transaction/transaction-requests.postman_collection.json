@@ -612,6 +612,112 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET TRANSACTION BY ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Transação retornada com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados da transação\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"transactionId\");",
+							"    pm.expect(json).to.have.property(\"payerId\");",
+							"    pm.expect(json).to.have.property(\"payerName\");",
+							"    pm.expect(json).to.have.property(\"payeeId\");",
+							"    pm.expect(json).to.have.property(\"payeeName\");",
+							"    pm.expect(json).to.have.property(\"amount\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"    pm.expect(json).to.have.property(\"transactionStatus\");",
+							"});",
+							"",
+							"pm.test(\"ID deve corresponder ao solicitado\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
+							"    pm.expect(json.transactionId.toString()).to.eql(requestedId);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/transactions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRANSACTION NOT FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Transação retornada com sucesso\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response deve conter dados da transação\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"transactionId\");",
+							"    pm.expect(json).to.have.property(\"payerId\");",
+							"    pm.expect(json).to.have.property(\"payerName\");",
+							"    pm.expect(json).to.have.property(\"payeeId\");",
+							"    pm.expect(json).to.have.property(\"payeeName\");",
+							"    pm.expect(json).to.have.property(\"amount\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"    pm.expect(json).to.have.property(\"transactionStatus\");",
+							"});",
+							"",
+							"pm.test(\"ID deve corresponder ao solicitado\", function () {",
+							"    const json = pm.response.json();",
+							"    const requestedId = pm.request.url.getPath().split(\"/\").pop();",
+							"    pm.expect(json.transactionId.toString()).to.eql(requestedId);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/transactions/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"transactions",
+						"1"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
