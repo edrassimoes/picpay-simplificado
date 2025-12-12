@@ -13,6 +13,7 @@ import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,15 @@ public class UserService {
     private final CommonUserRepository commonUserRepository;
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository, TransactionRepository transactionRepository, WalletService walletService) {
+    public UserService(UserRepository userRepository, MerchantUserRepository merchantUserRepository, CommonUserRepository commonUserRepository, TransactionRepository transactionRepository, WalletService walletService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.merchantUserRepository = merchantUserRepository;
         this.commonUserRepository = commonUserRepository;
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -43,6 +46,7 @@ public class UserService {
         }
 
         User user;
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
 
         if (dto.getUserType() == UserType.COMMON) {
 
@@ -58,7 +62,7 @@ public class UserService {
                 throw new InvalidDocumentTypeException("CNPJ não é permitido a usuários comuns");
             }
 
-            user = new CommonUser(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getCpf());
+            user = new CommonUser(dto.getName(), dto.getEmail(), hashedPassword, dto.getCpf());
 
         } else {
 
@@ -74,7 +78,7 @@ public class UserService {
                 throw new InvalidDocumentTypeException("CPF não é permitido a usuários lojistas");
             }
 
-            user = new MerchantUser(dto.getName(), dto.getEmail(), dto.getPassword(), dto.getCnpj());
+            user = new MerchantUser(dto.getName(), dto.getEmail(), hashedPassword, dto.getCnpj());
         }
 
         User savedUser = userRepository.save(user);
@@ -117,7 +121,8 @@ public class UserService {
         }
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            existingUser.setPassword(dto.getPassword());
+            String hashedPassword = passwordEncoder.encode(dto.getPassword());
+            existingUser.setPassword(hashedPassword);
         }
 
         User updatedUser = userRepository.save(existingUser);
