@@ -1,8 +1,9 @@
 package br.com.edras.picpaysimplificado.service;
 
 import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.dto.jwt.AuthResponseDTO;
-import br.com.edras.picpaysimplificado.dto.jwt.LoginRequestDTO;
+import br.com.edras.picpaysimplificado.dto.auth.AuthResponseDTO;
+import br.com.edras.picpaysimplificado.dto.auth.LoginRequestDTO;
+import br.com.edras.picpaysimplificado.exception.auth.InvalidCredentialsException;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,10 @@ public class AuthService {
 
     public AuthResponseDTO login(LoginRequestDTO request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(InvalidCredentialsException::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Senha inválida");
+            throw new InvalidCredentialsException();
         }
 
         String token = jwtService.generateToken(user);
