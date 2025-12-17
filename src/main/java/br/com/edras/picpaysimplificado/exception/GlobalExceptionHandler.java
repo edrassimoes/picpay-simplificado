@@ -1,5 +1,6 @@
 package br.com.edras.picpaysimplificado.exception;
 
+import br.com.edras.picpaysimplificado.exception.auth.InvalidCredentialsException;
 import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;
@@ -185,6 +186,16 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     public static class ErrorResponse {
