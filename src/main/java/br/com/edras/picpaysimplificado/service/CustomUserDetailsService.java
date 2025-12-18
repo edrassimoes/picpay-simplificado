@@ -3,11 +3,12 @@ package br.com.edras.picpaysimplificado.service;
 import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -23,7 +24,7 @@ public class CustomUserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .authorities("ROLE_USER") // Pode adicionar roles depois
+                .authorities("ROLE_USER")
                 .build();
     }
 
