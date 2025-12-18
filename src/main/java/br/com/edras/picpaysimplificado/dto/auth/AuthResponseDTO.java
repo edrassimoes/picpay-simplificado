@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.dto.jwt;
+package br.com.edras.picpaysimplificado.dto.auth;
 
 public class AuthResponseDTO {
 

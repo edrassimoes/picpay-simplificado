@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.controller;
 
-import br.com.edras.picpaysimplificado.dto.jwt.AuthResponseDTO;
-import br.com.edras.picpaysimplificado.dto.jwt.LoginRequestDTO;
+import br.com.edras.picpaysimplificado.dto.auth.AuthResponseDTO;
+import br.com.edras.picpaysimplificado.dto.auth.LoginRequestDTO;
 import br.com.edras.picpaysimplificado.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

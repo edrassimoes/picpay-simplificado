@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.dto.jwt;
+package br.com.edras.picpaysimplificado.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
