@@ -1,77 +1,44 @@
-package br.com.edras.picpaysimplificado.service;
+package br.com.edras.picpaysimplificado.security;
 
-import br.com.edras.picpaysimplificado.domain.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.function.Function;
+import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtEncoder encoder;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
-
-    // Cria um token para o usuário.
-    public String generateToken(User user) {
-        return Jwts.builder()
-                .subject(user.getEmail())
-                .claim("userId", user.getId())
-                .claim("userType", user.getUserType())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSigningKey())
-                .compact();
+    public JwtService(JwtEncoder encoder) {
+        this.encoder = encoder;
     }
 
-    // Extrai o e-mail do token.
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+    public String generateToken(Authentication authentication) {
 
-    // Valida se o token é válido.
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        return (email.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
+        Instant now = Instant.now();
+        long expiry = 3600L;
 
-    // Verifica se o token expirou.
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+        // Salva a role do usuário no token.
+        String scopes = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
+        var claims = JwtClaimsSet.builder()
+                .issuer("picpay-simplificado")
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expiry))
+                .subject(authentication.getName())
+                .claim("scope", scopes)
+                .build();
 
-    // Função genérica para extrair qualquer Claim do token.
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    // Converte a chave secreta em um objeto SecretKey usado para assinar, verificar o JWT.
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 
 }
