@@ -127,6 +127,114 @@
 			"response": []
 		},
 		{
+			"name": "CREATE COMMON USER WITH CNPJ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 ao criar usuário COMMON com CNPJ\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem de erro deve indicar que COMMON não pode ter CNPJ\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Pedro\",\n  \"email\": \"pedro@email.com\",\n  \"password\": \"123456\",\n  \"userType\": \"COMMON\",\n  \"cpf\": \"12345678909\",\n  \"cnpj\": \"11222333000181\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE MERCHANT USER WITH CPF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 400 ao criar usuário MERCHANT com CPF\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Mensagem de erro deve indicar que MERCHANT não pode ter CPF\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Loja do Pedro\",\n  \"email\": \"lojapedro@email.com\",\n  \"password\": \"123456\",\n  \"userType\": \"MERCHANT\",\n  \"cpf\": \"12345678909\",\n  \"cnpj\": \"11222333000181\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "CREATE USER WITH DUPLICATED EMAIL",
 			"event": [
 				{
@@ -888,6 +996,61 @@
 			"response": []
 		},
 		{
+			"name": "UPDATE NON-EXISTENT USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 404 ao atualizar usuário inexistente\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Mensagem de erro deve indicar usuário não encontrado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"não encontrado\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Edras\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/99",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"99"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "DELETE USER WITH TRANSACTIONS",
 			"event": [
 				{
@@ -986,6 +1149,87 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "DELETE NON-EXISTENT USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Deve retornar 404 ao deletar usuário inexistente\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Mensagem de erro deve indicar usuário não encontrado\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.message).to.include(\"não encontrado\");",
+							"});",
+							"",
+							"pm.test(\"Response deve conter status e timestamp\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"status\");",
+							"    pm.expect(json).to.have.property(\"timestamp\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/99",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"99"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"const token = pm.environment.get(\"jwt\");",
+					"",
+					"if (token) {",
+					"    pm.request.headers.upsert({",
+					"        key: \"Authorization\",",
+					"        value: `Bearer ${token}`",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
