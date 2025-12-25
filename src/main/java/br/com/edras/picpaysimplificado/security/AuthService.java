@@ -1,37 +1,35 @@
-package br.com.edras.picpaysimplificado.service;
+package br.com.edras.picpaysimplificado.security;
 
-import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.dto.auth.AuthResponseDTO;
 import br.com.edras.picpaysimplificado.dto.auth.LoginRequestDTO;
-import br.com.edras.picpaysimplificado.exception.auth.InvalidCredentialsException;
-import br.com.edras.picpaysimplificado.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthService(AuthenticationManager authenticationManager,
+                       JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
 
-    public AuthResponseDTO login(LoginRequestDTO request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(InvalidCredentialsException::new);
+    public AuthResponseDTO login(LoginRequestDTO dto) {
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException();
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        dto.getEmail(),
+                        dto.getPassword()
+                )
+        );
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(authentication);
 
-        return new AuthResponseDTO(token, user.getId(), user.getEmail());
+        return new AuthResponseDTO(token);
     }
-
 }
