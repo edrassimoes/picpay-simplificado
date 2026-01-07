@@ -36,7 +36,10 @@ public class MerchantUserRepositoryTest {
         assertThat(persistedUser.getCnpj()).isEqualTo(merchantUser.getCnpj());
     }
 
-    // Deveria pertencer a suit de UserRepository?
+    /*
+
+    Movido para UserRepository (Onde a validação do e-mail existe)
+
     @Test
     void save_WithExistingEmail_ShouldThrowDataIntegrityViolationException() {
         MerchantUser user1 = MerchantUserFixtures.createValidMerchantUser();
@@ -49,6 +52,8 @@ public class MerchantUserRepositoryTest {
             merchantUserRepository.saveAndFlush(user2);
         });
     }
+
+     */
 
     @Test
     void save_WithExistingCnpj_ShouldThrowDataIntegrityViolationException() {

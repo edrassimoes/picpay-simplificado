@@ -36,7 +36,10 @@ public class CommonUserRepositoryTest {
         assertThat(persistedUser.getCpf()).isEqualTo(commonUser.getCpf());
     }
 
-    // Deveria pertencer a suit de UserRepository?
+    /*
+
+    Movido para UserRepository (Onde a validação do e-mail existe)
+
     @Test
     void save_WithExistingEmail_ShouldThrowDataIntegrityViolationException() {
         CommonUser user1 = CommonUserFixtures.createValidCommonUser();
@@ -49,6 +52,8 @@ public class CommonUserRepositoryTest {
             commonUserRepository.saveAndFlush(user2);
         });
     }
+
+     */
 
     @Test
     void save_WithExistingCpf_ShouldThrowDataIntegrityViolationException() {
