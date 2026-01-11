@@ -9,6 +9,7 @@ public class WalletFixtures {
         Wallet wallet = new Wallet();
         wallet.setUser(user);
         wallet.setBalance(100.0);
+        user.setWallet(wallet);
         return wallet;
     }
 
@@ -16,6 +17,7 @@ public class WalletFixtures {
         Wallet wallet = new Wallet();
         wallet.setUser(user);
         wallet.setBalance(balance);
+        user.setWallet(wallet);
         return wallet;
     }
 
