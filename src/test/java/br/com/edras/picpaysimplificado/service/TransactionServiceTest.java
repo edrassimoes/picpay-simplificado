@@ -9,8 +9,10 @@ import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
 import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotAuthorizedException;
+import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
+import br.com.edras.picpaysimplificado.fixtures.TransactionFixtures;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,6 +124,58 @@ public class TransactionServiceTest {
 
         verify(walletService, never()).withdraw(any(), any());
         verify(walletService, never()).deposit(any(), any());
+    }
+
+    @Test
+    void findById_WhenTransactionExists_ShouldReturnTransactionDTO() {
+        Transaction transaction = TransactionFixtures.createTransaction();
+        transaction.setId(1L);
+
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+
+        TransactionResponseDTO response = transactionService.findById(transaction.getId());
+
+        assertThat(response).isNotNull();
+    }
+
+    @Test
+    void findById_WhenTransactionDoesNotExist_ShouldThrowException() {
+        Long transactionId = 99L;
+
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+
+        assertThrows(TransactionNotFoundException.class, () -> {
+            transactionService.findById(transactionId);
+        });
+    }
+
+    @Test
+    void findTransactionsByUserId_WhenTransactionsExist_ShouldReturnListOfDTOs() {
+        Long userId = 1L;
+
+        Transaction transaction1 = TransactionFixtures.createTransaction();
+        Transaction transaction2 = TransactionFixtures.createTransaction();
+
+        List<Transaction> transactions = List.of(transaction1, transaction2);
+
+        when(transactionRepository.findByUserId(userId)).thenReturn(transactions);
+
+        List<TransactionResponseDTO> response = transactionService.findTransactionsByUserId(userId);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(2);
+    }
+
+    @Test
+    void findTransactionsByUserId_WhenNoTransactionsExist_ShouldReturnEmptyList() {
+        Long userId = 1L;
+
+        when(transactionRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
+
+        List<TransactionResponseDTO> response = transactionService.findTransactionsByUserId(userId);
+
+        assertThat(response).isNotNull();
+        assertThat(response).isEmpty();
     }
 
 }
