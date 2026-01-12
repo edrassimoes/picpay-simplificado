@@ -101,11 +101,13 @@ public class TransactionService {
         transaction.setStatus(TransactionStatus.PENDING);
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        // API de autenticação.
+        // API de autenticação
+
         TransactionStatus authStatus = checkAuthorization();
         savedTransaction.setStatus(authStatus);
 
         if (authStatus != TransactionStatus.AUTHORIZED) {
+            savedTransaction.setStatus(authStatus);
             transactionRepository.save(savedTransaction);
             throw new TransactionNotAuthorizedException();
         }
@@ -123,7 +125,56 @@ public class TransactionService {
         Transaction completedTransaction = transactionRepository.save(savedTransaction);
 
         // API de notificação.
+
         sendNotification(completedTransaction);
+
+        return new TransactionResponseDTO(completedTransaction);
+    }
+
+    // Sobrecarga para quando as APIs estiverem fora do ar.
+    @Transactional
+    public TransactionResponseDTO transfer(TransactionRequestDTO dto, TransactionStatus authStatus) {
+
+        if (dto.getPayerId().equals(dto.getPayeeId())) {
+            throw new SameUserTransactionException();
+        }
+
+        User payer = userRepository.findById(dto.getPayerId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getPayerId()));
+
+        if (payer.getUserType() == UserType.MERCHANT) {
+            throw new MerchantCannotTransferException(payer.getId());
+        }
+
+        User payee = userRepository.findById(dto.getPayeeId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getPayeeId()));
+
+        // Cria a transação no banco.
+        Transaction transaction = new Transaction();
+        transaction.setAmount(dto.getAmount());
+        transaction.setPayer(payer);
+        transaction.setPayee(payee);
+        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setStatus(TransactionStatus.PENDING);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        if (authStatus != TransactionStatus.AUTHORIZED) {
+            savedTransaction.setStatus(authStatus);
+            transactionRepository.save(savedTransaction);
+            throw new TransactionNotAuthorizedException();
+        }
+
+        // Realiza a transação.
+        walletService.withdraw(payer.getId(), dto.getAmount());
+
+        if (payee instanceof MerchantUser) {
+            merchantDeposit((MerchantUser) payee, dto.getAmount());
+        } else {
+            walletService.deposit(payee.getId(), dto.getAmount());
+        }
+
+        savedTransaction.setStatus(TransactionStatus.COMPLETED);
+        Transaction completedTransaction = transactionRepository.save(savedTransaction);
 
         return new TransactionResponseDTO(completedTransaction);
     }
