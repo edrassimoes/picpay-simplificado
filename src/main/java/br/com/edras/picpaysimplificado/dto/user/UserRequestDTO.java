@@ -1,5 +1,8 @@
 package br.com.edras.picpaysimplificado.dto.user;
 
+import br.com.edras.picpaysimplificado.domain.CommonUser;
+import br.com.edras.picpaysimplificado.domain.MerchantUser;
+import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.validation.CNPJ;
 import br.com.edras.picpaysimplificado.validation.CPF;
@@ -38,6 +41,24 @@ public class UserRequestDTO {
         this.userType = userType;
         this.cpf = cpf;
         this.cnpj = cnpj;
+    }
+
+    public UserRequestDTO(CommonUser user) {
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.userType = user.getUserType();
+        this.cpf = user.getCpf();
+        this.cnpj = null;
+    }
+
+    public UserRequestDTO(MerchantUser user) {
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.userType = user.getUserType();
+        this.cpf = null;
+        this.cnpj = user.getCnpj();
     }
 
     public String getName() {
