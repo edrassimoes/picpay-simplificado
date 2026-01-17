@@ -9,7 +9,7 @@ public class CommonUserFixtures {
         user.setName("João");
         user.setEmail("joao@email.com");
         user.setPassword("senha123");
-        user.setCpf("12345678900");
+        user.setCpf("84564864009");
         return user;
     }
 
