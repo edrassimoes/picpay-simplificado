@@ -1,14 +1,12 @@
 package br.com.edras.picpaysimplificado.service;
 
 import br.com.edras.picpaysimplificado.domain.CommonUser;
+import br.com.edras.picpaysimplificado.domain.MerchantUser;
 import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
-import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.UserHasTransactionsException;
-import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
@@ -47,13 +45,18 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private UserRequestDTO userRequestDTO;
+    private UserRequestDTO commonUserRequestDTO;
+    private UserRequestDTO merchantUserRequestDTO;
     private User commonUser;
+    private User merchantUser;
 
     @BeforeEach
     void setUp() {
-        userRequestDTO = new UserRequestDTO("Test User", "test@test.com", "password", UserType.COMMON, "123.456.789-00", null);
+        commonUserRequestDTO = new UserRequestDTO("Test User", "test@test.com", "password", UserType.COMMON, "123.456.789-00", null);
+        merchantUserRequestDTO = new UserRequestDTO("Test User", "test@test.com", "password", UserType.MERCHANT, null, "73922156000187");
         commonUser = new CommonUser("Test User", "test@test.com", "encodedPassword", "123.456.789-00");
+        merchantUser = new MerchantUser("Test User", "test@test.com", "encodedPassword", "73922156000187");;
+
     }
 
     @Test
@@ -64,23 +67,52 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(commonUser);
         when(walletService.createOrUpdateWallet(any())).thenReturn(null);
 
-        UserResponseDTO result = userService.createUser(userRequestDTO);
+        UserResponseDTO result = userService.createUser(commonUserRequestDTO);
 
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(userRequestDTO.getName());
-        assertThat(result.getUserType()).isEqualTo(userRequestDTO.getUserType());
+        assertThat(result.getName()).isEqualTo(commonUserRequestDTO.getName());
+        assertThat(result.getUserType()).isEqualTo(commonUserRequestDTO.getUserType());
 
         verify(userRepository).save(any(CommonUser.class));
         verify(walletService).createOrUpdateWallet(any());
     }
 
     @Test
+    void createUser_ShouldCreateMerchantUser_WhenDataIsValid() {
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(merchantUserRepository.existsByCnpj(anyString())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(merchantUser);
+        when(walletService.createOrUpdateWallet(any())).thenReturn(null);
+
+        UserResponseDTO result = userService.createUser(merchantUserRequestDTO);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(merchantUserRequestDTO.getName());
+        assertThat(result.getUserType()).isEqualTo(merchantUserRequestDTO.getUserType());
+
+        verify(userRepository).save(any(MerchantUser.class));
+        verify(walletService).createOrUpdateWallet(any());
+    }
+
+    @Test
+    void createUser_ShouldThrowInvalidDocumentTypeException_ForCommonUserWithCnpj() {
+        commonUserRequestDTO.setCnpj("73922156000187");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(commonUserRepository.existsByCpf(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(commonUserRequestDTO))
+                .isInstanceOf(InvalidDocumentTypeException.class);
+    }
+
+    @Test
     void createUser_ShouldThrowEmailAlreadyExistsException_WhenEmailExists() {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
-        assertThatThrownBy(() -> userService.createUser(userRequestDTO))
+        assertThatThrownBy(() -> userService.createUser(commonUserRequestDTO))
                 .isInstanceOf(EmailAlreadyExistsException.class)
-                .hasMessageContaining("Email já cadastrado: " + userRequestDTO.getEmail());
+                .hasMessageContaining("Email já cadastrado: " + commonUserRequestDTO.getEmail());
 
         verify(userRepository, never()).save(any());
     }
@@ -90,9 +122,21 @@ class UserServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(commonUserRepository.existsByCpf(anyString())).thenReturn(true);
 
-        assertThatThrownBy(() -> userService.createUser(userRequestDTO))
+        assertThatThrownBy(() -> userService.createUser(commonUserRequestDTO))
                 .isInstanceOf(DocumentAlreadyExistsException.class)
-                .hasMessageContaining("CPF/CNPJ já cadastrado: " + userRequestDTO.getCpf());
+                .hasMessageContaining("CPF/CNPJ já cadastrado: " + commonUserRequestDTO.getCpf());
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUser_ShouldThrowDocumentAlreadyExistsException_WhenCnpjExists() {
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(merchantUserRepository.existsByCnpj(anyString())).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.createUser(merchantUserRequestDTO))
+                .isInstanceOf(DocumentAlreadyExistsException.class)
+                .hasMessageContaining("CPF/CNPJ já cadastrado: " + merchantUserRequestDTO.getCnpj());
 
         verify(userRepository, never()).save(any());
     }
