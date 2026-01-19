@@ -146,6 +146,30 @@ class UserServiceTest {
     }
 
     @Test
+    void createUser_ShouldThrowIllegalArgumentException_WhenCpfIsMissing() {
+        commonUserRequestDTO.setCpf(null);
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(commonUserRequestDTO))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUser_ShouldThrowIllegalArgumentException_WhenCpfIsBlank() {
+        commonUserRequestDTO.setCpf("   ");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(commonUserRequestDTO))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void createUser_ShouldThrowDocumentAlreadyExistsException_WhenCnpjExists() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(merchantUserRepository.existsByCnpj(anyString())).thenReturn(true);
@@ -160,6 +184,18 @@ class UserServiceTest {
     @Test
     void createUser_ShouldThrowIllegalArgumentException_WhenCnpjIsMissing() {
         merchantUserRequestDTO.setCnpj(null);
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(merchantUserRequestDTO))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUser_ShouldThrowIllegalArgumentException_WhenCnpjIsBlank() {
+        merchantUserRequestDTO.setCnpj("   ");
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
