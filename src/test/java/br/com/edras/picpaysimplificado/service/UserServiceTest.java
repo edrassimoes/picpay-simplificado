@@ -31,14 +31,19 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private MerchantUserRepository merchantUserRepository;
+
     @Mock
     private CommonUserRepository commonUserRepository;
+
     @Mock
     private TransactionRepository transactionRepository;
+
     @Mock
     private WalletService walletService;
+
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -107,6 +112,17 @@ class UserServiceTest {
     }
 
     @Test
+    void createUser_ShouldThrowInvalidDocumentTypeException_ForMerchantUserWithCpf() {
+        merchantUserRequestDTO.setCpf("123.456.789-00");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(merchantUserRepository.existsByCnpj(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(merchantUserRequestDTO))
+                .isInstanceOf(InvalidDocumentTypeException.class);
+    }
+
+    @Test
     void createUser_ShouldThrowEmailAlreadyExistsException_WhenEmailExists() {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
@@ -137,6 +153,18 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser(merchantUserRequestDTO))
                 .isInstanceOf(DocumentAlreadyExistsException.class)
                 .hasMessageContaining("CPF/CNPJ já cadastrado: " + merchantUserRequestDTO.getCnpj());
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void createUser_ShouldThrowIllegalArgumentException_WhenCnpjIsMissing() {
+        merchantUserRequestDTO.setCnpj(null);
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> userService.createUser(merchantUserRequestDTO))
+                .isInstanceOf(IllegalArgumentException.class);
 
         verify(userRepository, never()).save(any());
     }
