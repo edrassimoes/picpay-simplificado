@@ -208,6 +208,19 @@ class UserServiceTest {
     }
 
     @Test
+    void createUser_ShouldEncodePassword_WhenCreatingUser() {
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("hashedPassword");
+        when(commonUserRepository.existsByCpf(anyString())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(commonUser);
+
+        userService.createUser(commonUserRequestDTO);
+
+        verify(passwordEncoder).encode("password");
+        verify(userRepository).save(any(CommonUser.class));
+    }
+
+    @Test
     void findUserById_ShouldReturnUser_WhenIdExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(commonUser));
 
