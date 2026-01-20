@@ -6,6 +6,7 @@ import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
+import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
 import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
@@ -262,6 +263,64 @@ class UserServiceTest {
         List<UserResponseDTO> result = userService.findAllUsers();
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void updateUser_ShouldUpdateNameEmailAndPassword_WhenValid() {
+        UserUpdateDTO dto = new UserUpdateDTO();
+        dto.setName("Updated Name");
+        dto.setEmail("new@test.com");
+        dto.setPassword("newPassword");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(commonUser));
+        when(userRepository.existsByEmail("new@test.com")).thenReturn(false);
+        when(passwordEncoder.encode("newPassword")).thenReturn("hashedNewPassword");
+        when(userRepository.save(any(User.class))).thenReturn(commonUser);
+
+        UserResponseDTO result = userService.updateUser(1L, dto);
+
+        assertThat(result.getName()).isEqualTo("Updated Name");
+        verify(passwordEncoder).encode("newPassword");
+        verify(userRepository).save(commonUser);
+    }
+
+    @Test
+    void updateUser_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
+        UserUpdateDTO dto = new UserUpdateDTO();
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateUser(1L, dto))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    void updateUser_ShouldThrowEmailAlreadyExistsException_WhenEmailExists() {
+        UserUpdateDTO dto = new UserUpdateDTO();
+        dto.setEmail("new@test.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(commonUser));
+        when(userRepository.existsByEmail("new@test.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.updateUser(1L, dto))
+                .isInstanceOf(EmailAlreadyExistsException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void updateUser_ShouldIgnoreBlankFields() {
+        UserUpdateDTO dto = new UserUpdateDTO();
+        dto.setName("   ");
+        dto.setEmail("   ");
+        dto.setPassword("   ");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(commonUser));
+        when(userRepository.save(any(User.class))).thenReturn(commonUser);
+
+        UserResponseDTO result = userService.updateUser(1L, dto);
+
+        assertThat(result.getName()).isEqualTo(commonUser.getName());
+        verify(userRepository).save(commonUser);
     }
 
     @Test
