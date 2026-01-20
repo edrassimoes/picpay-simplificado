@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,6 +226,29 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.findUserById(1L))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining("Usuário não encontrado com ID: ");
+    }
+
+    @Test
+    void findAllUsers_ShouldReturnAllUsers() {
+        commonUser.setId(1L);
+        merchantUser.setId(2L);
+
+        when(userRepository.findAll()).thenReturn(Arrays.asList(commonUser, merchantUser));
+
+        List<UserResponseDTO> result = userService.findAllUsers();
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getName()).isEqualTo(commonUser.getName());
+        assertThat(result.get(1).getName()).isEqualTo(merchantUser.getName());
+    }
+
+    @Test
+    void findAllUsers_ShouldReturnEmptyList_WhenNoUsers() {
+        when(userRepository.findAll()).thenReturn(List.of());
+
+        List<UserResponseDTO> result = userService.findAllUsers();
+
+        assertThat(result).isEmpty();
     }
 
     @Test
