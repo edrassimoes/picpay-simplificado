@@ -32,10 +32,9 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -341,6 +340,29 @@ public class UserControllerTest {
         mockMvc.perform(put("/users/abc")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void deleteUser_WithValidId_ReturnsNoContent() throws Exception {
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteUser_WithInvalidId_ReturnsNotFound() throws Exception {
+        doThrow(new UserNotFoundException("Usuário não encontrado para id:" + 99L))
+                .when(userService).deleteUserById(99L);
+
+        mockMvc.perform(delete("/users/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void deleteUser_WithInvalidIdFormat_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(delete("/users/abc"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("id")));
     }
