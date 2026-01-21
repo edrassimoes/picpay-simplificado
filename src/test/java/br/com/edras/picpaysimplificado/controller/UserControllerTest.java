@@ -87,6 +87,14 @@ public class UserControllerTest {
     }
 
     @Test
+    void createUser_WithEmptyBody_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void createUser_WithNullName_ReturnsBadRequest() throws Exception {
         CommonUser user = CommonUserFixtures.createValidCommonUser();
         user.setName(null);
@@ -245,6 +253,15 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(users.size())));
+    }
+
+    @Test
+    void findAllUsers_WhenEmpty_ReturnsEmptyList() throws Exception {
+        when(userService.findAllUsers()).thenReturn(List.of());
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(0)));
     }
 
     @Test
