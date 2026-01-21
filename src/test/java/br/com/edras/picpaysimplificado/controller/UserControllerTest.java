@@ -292,4 +292,11 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message", containsString("Usuário não encontrado com ID: " + invalidId)));
     }
 
+    @Test
+    void findUserById_WithInvalidIdFormat_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/users/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
 }
