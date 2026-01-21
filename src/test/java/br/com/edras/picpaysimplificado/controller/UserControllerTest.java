@@ -6,10 +6,7 @@ import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
-import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
-import br.com.edras.picpaysimplificado.exception.user.InvalidDocumentTypeException;
-import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.*;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
 import br.com.edras.picpaysimplificado.service.UserService;
@@ -434,6 +431,23 @@ public class UserControllerTest {
     }
 
     @Test
+    void updateMerchantUser_WithValidData_ReturnsOk() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("Mercadinho do João", null, null);
+        UserResponseDTO response = new UserResponseDTO(4L, "Mercadinho do João", UserType.MERCHANT);
+
+        when(userService.updateUser(eq(4L), any(UserUpdateDTO.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(put("/users/4")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(response.getId().intValue()))
+                .andExpect(jsonPath("$.name").value("Mercadinho do João"))
+                .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
+    @Test
     void updateUser_WithInvalidId_ReturnsNotFound() throws Exception {
         UserUpdateDTO dto = new UserUpdateDTO("Nome", "email@email.com", null);
 
@@ -456,6 +470,28 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void updateUser_WithBlankName_ReturnsBadRequest() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("  ", null, null);
+
+        mockMvc.perform(put("/users/1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Nome não pode estar em branco")));
+    }
+
+    @Test
+    void updateUser_WithBlankPassword_ReturnsBadRequest() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO(null, null, "  ");
+
+        mockMvc.perform(put("/users/1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Senha não pode estar em branco")));
     }
 
     @Test
