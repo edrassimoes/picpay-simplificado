@@ -4,12 +4,14 @@ import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.domain.MerchantUser;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
+import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
+import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
 import br.com.edras.picpaysimplificado.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +133,21 @@ public class UserControllerTest {
     }
 
     @Test
+    void createUser_WithDuplicatedEmail_ReturnsConflict() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        when(userService.createUser(any()))
+                .thenThrow(new EmailAlreadyExistsException("Email já cadastrado"));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message", containsString("Email já cadastrado")));
+    }
+
+    @Test
     public void createUser_WithNullPassword_ReturnsBadRequest() throws Exception {
         CommonUser user = CommonUserFixtures.createValidCommonUser();
         user.setPassword(null);
@@ -165,6 +182,21 @@ public class UserControllerTest {
     }
 
     @Test
+    public void createUser_WithDuplicatedCpf_ReturnsConflict() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        when(userService.createUser(any()))
+                .thenThrow(new DocumentAlreadyExistsException("CPF/CNPJ já cadastrado: " + user.getCpf()));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message", containsString("CPF/CNPJ já cadastrado: " + user.getCpf())));
+    }
+
+    @Test
     public void createMerchantUser_WithInvalidCnpj_ReturnsBadRequest() throws Exception {
         MerchantUser user = MerchantUserFixtures.createValidMerchantUser();
         user.setCnpj("123");
@@ -179,6 +211,21 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("CNPJ inválido")
                 ));
+    }
+
+    @Test
+    public void createUser_WithDuplicatedCnpj_ReturnsConflict() throws Exception {
+        MerchantUser user = MerchantUserFixtures.createValidMerchantUser();
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        when(userService.createUser(any()))
+                .thenThrow(new DocumentAlreadyExistsException("CPF/CNPJ já cadastrado: " + user.getCnpj()));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message", containsString("CPF/CNPJ já cadastrado: " + user.getCnpj())));
     }
 
     @Test
