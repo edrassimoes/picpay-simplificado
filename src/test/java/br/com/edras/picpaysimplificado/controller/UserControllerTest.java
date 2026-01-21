@@ -529,4 +529,14 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message", containsString("id")));
     }
 
+    @Test
+    void deleteUser_WithTransactions_ReturnsConflict() throws Exception {
+        doThrow(new UserHasTransactionsException())
+                .when(userService).deleteUserById(1L);
+
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message", containsString("possui transações vinculadas")));
+    }
+
 }
