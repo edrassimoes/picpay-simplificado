@@ -17,6 +17,12 @@ public class UserResponseDTO {
         this.userType = user.getUserType();
     }
 
+    public UserResponseDTO(Long id, String name, UserType userType) {
+        this.id = id;
+        this.name = name;
+        this.userType = userType;
+    }
+
     public Long getId() {
         return id;
     }
