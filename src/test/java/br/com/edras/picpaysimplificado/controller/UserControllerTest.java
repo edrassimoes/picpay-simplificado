@@ -116,6 +116,20 @@ public class UserControllerTest {
     }
 
     @Test
+    void createUser_WithBlankName_ReturnsBadRequest() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        user.setName("  ");
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Nome é obrigatório")));
+    }
+
+    @Test
     public void createUser_WithNullEmail_ReturnsBadRequest() throws Exception {
         CommonUser user = CommonUserFixtures.createValidCommonUser();
         user.setEmail(null);
@@ -130,6 +144,20 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("Email é obrigatório")
                 ));
+    }
+
+    @Test
+    void createUser_WithBlankEmail_ReturnsBadRequest() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        user.setEmail("  ");
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Email é obrigatório")));
     }
 
     @Test
@@ -179,6 +207,20 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("Senha é obrigatória")
                 ));
+    }
+
+    @Test
+    void createUser_WithBlankPassword_ReturnsBadRequest() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        user.setPassword("  ");
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Senha é obrigatória")));
     }
 
     @Test
@@ -345,6 +387,18 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void updateUser_WithInvalidEmail_ReturnsBadRequest() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("Nome", "email-invalido", null);
+
+        mockMvc.perform(put("/users/1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Email inválido")
+                ));
     }
 
     @Test
