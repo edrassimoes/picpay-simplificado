@@ -14,9 +14,17 @@ public class UserUpdateDTO {
     public UserUpdateDTO() {}
 
     public UserUpdateDTO(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (email != null) {
+            this.email = email;
+        }
+
+        if (password != null) {
+            this.password = password;
+        }
     }
 
     public String getName() {
