@@ -4,10 +4,12 @@ import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.domain.MerchantUser;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
+import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
 import br.com.edras.picpaysimplificado.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -173,6 +179,48 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("CNPJ inválido")
                 ));
+    }
+
+    @Test
+    public void findAllUsers_ReturnsListOfUsers() throws Exception {
+        List<UserResponseDTO> users = new ArrayList<>();
+        users.add(new UserResponseDTO(CommonUserFixtures.createValidCommonUser()));
+        users.add(new UserResponseDTO(MerchantUserFixtures.createValidMerchantUser()));
+
+        when(userService.findAllUsers()).thenReturn(users);
+
+        mockMvc.perform(get("/users"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(users.size())));
+    }
+
+    @Test
+    public void findUserById_WithValidId_ReturnsUser() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        user.setId(1L);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user);
+
+        when(userService.findUserById(1L)).thenReturn(userResponseDTO);
+
+        mockMvc.perform(get("/users/" + user.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.name", is(userResponseDTO.getName())));
+    }
+
+    @Test
+    public void findUserById_WithInvalidId_ReturnsNotFound() throws Exception {
+        long invalidId = 99L;
+
+        when(userService.findUserById(invalidId)).thenThrow(new UserNotFoundException("Usuário não encontrado com ID: " + invalidId));
+
+        mockMvc.perform(get("/users/" + invalidId))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", containsString("Usuário não encontrado com ID: " + invalidId)));
     }
 
 }
