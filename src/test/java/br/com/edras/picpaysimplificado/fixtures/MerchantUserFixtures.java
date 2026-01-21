@@ -9,7 +9,7 @@ public class MerchantUserFixtures {
         user.setName("Bazar");
         user.setEmail("bazar@email.com");
         user.setPassword("bazar123");
-        user.setCnpj("73922156000187");
+        user.setCnpj("11581376000153");
         return user;
     }
 
