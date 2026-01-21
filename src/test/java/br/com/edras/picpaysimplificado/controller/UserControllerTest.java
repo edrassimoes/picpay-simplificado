@@ -86,7 +86,8 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(userResponseDTO.getId())))
                 .andExpect(jsonPath("$.name", is(userResponseDTO.getName())))
-                .andExpect(jsonPath("$.userType", is(userResponseDTO.getUserType().toString())));
+                .andExpect(jsonPath("$.userType", is(userResponseDTO.getUserType().toString())))
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
@@ -255,7 +256,8 @@ public class UserControllerTest {
         mockMvc.perform(get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(users.size())));
+                .andExpect(jsonPath("$.size()", is(users.size())))
+                .andExpect(jsonPath("$[*].password").doesNotExist());
     }
 
     @Test
@@ -280,7 +282,8 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                .andExpect(jsonPath("$.name", is(userResponseDTO.getName())));
+                .andExpect(jsonPath("$.name", is(userResponseDTO.getName())))
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
