@@ -8,6 +8,7 @@ import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
 import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
+import br.com.edras.picpaysimplificado.exception.user.InvalidDocumentTypeException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
@@ -241,6 +242,40 @@ public class UserControllerTest {
     }
 
     @Test
+    void createCommonUser_WithoutCpf_ReturnsBadRequest() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+        user.setCpf(null);
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        when(userService.createUser(any()))
+                .thenThrow(new IllegalArgumentException("CPF é obrigatório para usuários comuns"));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("CPF é obrigatório para usuários comuns")));
+    }
+
+    @Test
+    void createCommonUser_WithCnpj_ReturnsBadRequest() throws Exception {
+        CommonUser user = CommonUserFixtures.createValidCommonUser();
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+        dto.setCnpj("11222333000181");
+
+        when(userService.createUser(any()))
+                .thenThrow(new InvalidDocumentTypeException("CNPJ não é permitido a usuários comuns"));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("CNPJ não é permitido a usuários comuns")));
+    }
+
+    @Test
     public void createUser_WithDuplicatedCpf_ReturnsConflict() throws Exception {
         CommonUser user = CommonUserFixtures.createValidCommonUser();
         UserRequestDTO dto = new UserRequestDTO(user);
@@ -270,6 +305,40 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("CNPJ inválido")
                 ));
+    }
+
+    @Test
+    void createMerchantUser_WithoutCnpj_ReturnsBadRequest() throws Exception {
+        MerchantUser user = MerchantUserFixtures.createValidMerchantUser();
+        user.setCnpj(null);
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+
+        when(userService.createUser(any()))
+                .thenThrow(new IllegalArgumentException("CNPJ é obrigatório para usuários lojistas"));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("CNPJ é obrigatório para usuários lojistas")));
+    }
+
+    @Test
+    void createMerchantUser_WithCpf_ReturnsBadRequest() throws Exception {
+        MerchantUser user = MerchantUserFixtures.createValidMerchantUser();
+
+        UserRequestDTO dto = new UserRequestDTO(user);
+        dto.setCpf("12345678909");
+
+        when(userService.createUser(any()))
+                .thenThrow(new InvalidDocumentTypeException("CPF não é permitido a usuários lojistas"));
+
+        mockMvc.perform(post("/users")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("CPF não é permitido a usuários lojistas")));
     }
 
     @Test
