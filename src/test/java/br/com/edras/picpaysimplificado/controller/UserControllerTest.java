@@ -65,6 +65,11 @@ public class UserControllerTest {
     @Autowired
     private UserService userService;
 
+    @BeforeEach
+    void setUp() {
+        Mockito.reset(userService);
+    }
+
     @Test
     public void createUser_WithValidData_ReturnsCreated() throws Exception {
         CommonUser user = CommonUserFixtures.createValidCommonUser();
