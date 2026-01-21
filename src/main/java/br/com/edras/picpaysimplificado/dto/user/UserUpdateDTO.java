@@ -1,14 +1,17 @@
 package br.com.edras.picpaysimplificado.dto.user;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 
 public class UserUpdateDTO {
 
+    @Pattern(regexp = "^(?!\\s*$).+", message = "Nome não pode estar em branco")
     private String name;
 
     @Email(message = "Email inválido")
     private String email;
 
+    @Pattern(regexp = "^(?!\\s*$).+", message = "Senha não pode estar em branco")
     private String password;
 
     public UserUpdateDTO() {}
