@@ -2,8 +2,10 @@ package br.com.edras.picpaysimplificado.controller;
 
 import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.domain.MerchantUser;
+import br.com.edras.picpaysimplificado.domain.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
+import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;
 import br.com.edras.picpaysimplificado.exception.user.DocumentAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.user.EmailAlreadyExistsException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
@@ -29,9 +31,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -295,6 +299,48 @@ public class UserControllerTest {
     @Test
     void findUserById_WithInvalidIdFormat_ReturnsBadRequest() throws Exception {
         mockMvc.perform(get("/users/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void updateUser_WithValidData_ReturnsOk() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("Novo Nome", "novo@email.com", null);
+        UserResponseDTO response = new UserResponseDTO(1L, "Novo Nome", UserType.COMMON);
+
+        when(userService.updateUser(eq(1L), any(UserUpdateDTO.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(put("/users/1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(response.getId().intValue()))
+                .andExpect(jsonPath("$.name").value("Novo Nome"))
+                .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
+    @Test
+    void updateUser_WithInvalidId_ReturnsNotFound() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("Nome", "email@email.com", null);
+
+        when(userService.updateUser(eq(99L), any()))
+                .thenThrow(new UserNotFoundException("Usuário não encontrado para id:" + 99L));
+
+        mockMvc.perform(put("/users/99")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", containsString("id")));
+    }
+
+    @Test
+    void updateUser_WithInvalidIdFormat_ReturnsBadRequest() throws Exception {
+        UserUpdateDTO dto = new UserUpdateDTO("Nome", "email@email.com", null);
+
+        mockMvc.perform(put("/users/abc")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("id")));
     }
