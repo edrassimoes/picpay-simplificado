@@ -49,13 +49,26 @@ class TransactionRepositoryTest {
     }
 
     @Test
+    void findByUserId_ShouldReturnEmptyList_WhenUserHasNoTransactions() {
+        User user = new CommonUser("User", "user@test.com", "pass", "111.111.111-11");
+
+        entityManager.persist(user);
+
+        List<Transaction> result = transactionRepository.findByUserId(user.getId());
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void existsByPayerId_ShouldReturnTrue_WhenUserIsPayer() {
         User payer = new CommonUser("Payer", "payer@test.com", "pass", "111.111.111-11");
         User payee = new CommonUser("Payee", "payee@test.com", "pass", "222.222.222-22");
+
         entityManager.persist(payer);
         entityManager.persist(payee);
 
         Transaction transaction = new Transaction(100.0, payer, payee, LocalDateTime.now(), TransactionStatus.COMPLETED);
+
         entityManager.persist(transaction);
 
         boolean result = transactionRepository.existsByPayerId(payer.getId());
@@ -67,10 +80,12 @@ class TransactionRepositoryTest {
     void existsByPayerId_ShouldReturnFalse_WhenUserIsNotPayer() {
         User payer = new CommonUser("Payer", "payer@test.com", "pass", "111.111.111-11");
         User payee = new CommonUser("Payee", "payee@test.com", "pass", "222.222.222-22");
+
         entityManager.persist(payer);
         entityManager.persist(payee);
 
         Transaction transaction = new Transaction(100.0, payer, payee, LocalDateTime.now(), TransactionStatus.COMPLETED);
+
         entityManager.persist(transaction);
 
         boolean result = transactionRepository.existsByPayerId(payee.getId());
@@ -82,10 +97,12 @@ class TransactionRepositoryTest {
     void existsByPayeeId_ShouldReturnTrue_WhenUserIsPayee() {
         User payer = new CommonUser("Payer", "payer@test.com", "pass", "111.111.111-11");
         User payee = new CommonUser("Payee", "payee@test.com", "pass", "222.222.222-22");
+
         entityManager.persist(payer);
         entityManager.persist(payee);
 
         Transaction transaction = new Transaction(100.0, payer, payee, LocalDateTime.now(), TransactionStatus.COMPLETED);
+
         entityManager.persist(transaction);
 
         boolean result = transactionRepository.existsByPayeeId(payee.getId());
@@ -97,10 +114,12 @@ class TransactionRepositoryTest {
     void existsByPayeeId_ShouldReturnFalse_WhenUserIsNotPayee() {
         User payer = new CommonUser("Payer", "payer@test.com", "pass", "111.111.111-11");
         User payee = new CommonUser("Payee", "payee@test.com", "pass", "222.222.222-22");
+
         entityManager.persist(payer);
         entityManager.persist(payee);
 
         Transaction transaction = new Transaction(100.0, payer, payee, LocalDateTime.now(), TransactionStatus.COMPLETED);
+
         entityManager.persist(transaction);
 
         boolean result = transactionRepository.existsByPayeeId(payer.getId());
