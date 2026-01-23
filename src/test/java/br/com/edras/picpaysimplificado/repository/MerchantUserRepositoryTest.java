@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
@@ -84,12 +83,14 @@ public class MerchantUserRepositoryTest {
     }
 
     @Test
-    void save_WithNullCnpj_ShouldNotThrowException() {
+    void save_WithNullCnpj_ShouldPersistEntity() {
         MerchantUser merchantUser = MerchantUserFixtures.createValidMerchantUser();
         merchantUser.setCnpj(null);
-        assertDoesNotThrow(() -> {
-            merchantUserRepository.saveAndFlush(merchantUser);
-        });
+
+        MerchantUser saved = merchantUserRepository.saveAndFlush(merchantUser);
+
+        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.getCnpj()).isNull();
     }
 
 }

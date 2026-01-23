@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
@@ -84,12 +83,14 @@ public class CommonUserRepositoryTest {
     }
 
     @Test
-    void save_WithNullCpf_ShouldNotThrowException() {
+    void save_WithNullCpf_ShouldPersistEntity() {
         CommonUser commonUser = CommonUserFixtures.createValidCommonUser();
         commonUser.setCpf(null);
-        assertDoesNotThrow(() -> {
-            commonUserRepository.saveAndFlush(commonUser);
-        });
+
+        CommonUser saved = commonUserRepository.saveAndFlush(commonUser);
+
+        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.getCpf()).isNull();
     }
 
 }
