@@ -160,6 +160,22 @@ class TransactionControllerTest {
     }
 
     @Test
+    void createTransaction_ShouldReturn400_WhenAmountIsNegative() throws Exception {
+        String invalidRequest = """
+        {
+            "payerId": 1,
+            "payeeId": 2,
+            "amount": -100
+        }
+    """;
+
+        mockMvc.perform(post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void findById_ShouldReturn200_WhenTransactionExists() throws Exception {
         TransactionResponseDTO response = new TransactionResponseDTO(
                 1L, 1L, "Payer", 2L, "Payee", 100.0, LocalDateTime.now(), TransactionStatus.COMPLETED);
