@@ -4,6 +4,7 @@ import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
+import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import br.com.edras.picpaysimplificado.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,6 +98,25 @@ class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createTransaction_ShouldReturn400_WhenPayerAndPayeeAreSame() throws Exception {
+        String invalidRequest = """
+        {
+            "payerId": 1,
+            "payeeId": 1,
+            "amount": 100
+        }
+    """;
+
+        when(transactionService.transfer(any(TransactionRequestDTO.class)))
+                .thenThrow(new SameUserTransactionException());
+
+        mockMvc.perform(post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
