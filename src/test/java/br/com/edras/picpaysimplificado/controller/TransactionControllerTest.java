@@ -4,6 +4,7 @@ import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
+import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import br.com.edras.picpaysimplificado.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -94,6 +97,51 @@ class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void findById_ShouldReturn200_WhenTransactionExists() throws Exception {
+        TransactionResponseDTO response = new TransactionResponseDTO(
+                1L, 1L, "Payer", 2L, "Payee", 100.0, LocalDateTime.now(), TransactionStatus.COMPLETED);
+
+        when(transactionService.findById(1L)).thenReturn(response);
+
+        mockMvc.perform(get("/transactions/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transactionId").value(1L));
+    }
+
+    @Test
+    void findById_ShouldReturn404_WhenTransactionDoesNotExist() throws Exception {
+        when(transactionService.findById(99L)).thenThrow(new TransactionNotFoundException(99L));
+
+        mockMvc.perform(get("/transactions/{id}", 99L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void findTransactionsByUserId_ShouldReturn200_WithTransactionList() throws Exception {
+        List<TransactionResponseDTO> response = List.of(
+                new TransactionResponseDTO(
+                        1L, 1L, "Payer", 2L, "Payee", 100.0, LocalDateTime.now(), TransactionStatus.COMPLETED),
+                new TransactionResponseDTO(
+                        1L, 1L, "Payer", 3L, "Payee", 250.0, LocalDateTime.now(), TransactionStatus.PENDING)
+        );
+
+        when(transactionService.findTransactionsByUserId(1L)).thenReturn(response);
+
+        mockMvc.perform(get("/transactions/users/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    void findTransactionsByUserId_ShouldReturn200_WhenNoTransactionsExist() throws Exception {
+        when(transactionService.findTransactionsByUserId(1L)).thenReturn(List.of());
+
+        mockMvc.perform(get("/transactions/users/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
 }
