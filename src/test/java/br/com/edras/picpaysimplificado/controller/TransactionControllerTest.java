@@ -6,6 +6,7 @@ import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
 import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
+import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -117,6 +118,25 @@ class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidRequest))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createTransaction_ShouldReturn404_WhenPayerDoesNotExist() throws Exception {
+        String invalidRequest = """
+        {
+            "payerId": 99,
+            "payeeId": 1,
+            "amount": 100
+        }
+    """;
+
+        when(transactionService.transfer(any(TransactionRequestDTO.class)))
+                .thenThrow(new UserNotFoundException(99L));
+
+        mockMvc.perform(post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andExpect(status().isNotFound());
     }
 
     @Test
