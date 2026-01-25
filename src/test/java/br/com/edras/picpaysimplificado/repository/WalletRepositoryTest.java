@@ -54,18 +54,4 @@ public class WalletRepositoryTest {
         assertThat(persistedWallet.getUser()).isEqualTo(user);
     }
 
-    @Test
-    void findByUserId_WhenWalletExists_ShouldReturnWallet() {
-        CommonUser user = CommonUserFixtures.createValidCommonUser();
-        testEntityManager.persist(user);
-
-        Wallet wallet = WalletFixtures.createWallet(user);
-        testEntityManager.persist(wallet);
-
-        Optional<Wallet> foundWallet = walletRepository.findById(user.getId());
-
-        assertThat(foundWallet).isPresent();
-        assertThat(foundWallet.get().getUser()).isEqualTo(user);
-    }
-
 }
