@@ -5,6 +5,7 @@ import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;
 import br.com.edras.picpaysimplificado.exception.transaction.SameUserTransactionException;
+import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotAuthorizedException;
 import br.com.edras.picpaysimplificado.exception.transaction.TransactionNotFoundException;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.service.TransactionService;
@@ -137,6 +138,25 @@ class TransactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidRequest))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void createTransaction_ShouldReturn403_WhenTransactionIsNotAuthorized() throws Exception {
+        String request = """
+        {
+            "payerId": 99,
+            "payeeId": 1,
+            "amount": 100
+        }
+    """;
+
+        when(transactionService.transfer(any(TransactionRequestDTO.class)))
+                .thenThrow(new TransactionNotAuthorizedException());
+
+        mockMvc.perform(post("/transactions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isForbidden());
     }
 
     @Test
