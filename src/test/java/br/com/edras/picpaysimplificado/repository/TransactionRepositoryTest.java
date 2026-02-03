@@ -4,6 +4,7 @@ import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.domain.Transaction;
 import br.com.edras.picpaysimplificado.domain.User;
 import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
+import br.com.edras.picpaysimplificado.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,7 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class TransactionRepositoryTest {
+class TransactionRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;

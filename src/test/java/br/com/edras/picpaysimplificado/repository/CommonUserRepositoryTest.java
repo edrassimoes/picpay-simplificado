@@ -2,6 +2,7 @@ package br.com.edras.picpaysimplificado.repository;
 
 import br.com.edras.picpaysimplificado.domain.CommonUser;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
+import br.com.edras.picpaysimplificado.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
-public class CommonUserRepositoryTest {
+public class CommonUserRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
     private CommonUserRepository commonUserRepository;
