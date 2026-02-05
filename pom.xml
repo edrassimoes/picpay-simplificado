@@ -144,6 +144,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.14</version>
                 <configuration>
                     <excludes>
                         <exclude>br/com/edras/picpaysimplificado/PicpaySimplificadoApplication.class</exclude>
@@ -173,6 +174,37 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.22.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetTests>
+                        <param>br.com.edras.picpaysimplificado.*Test</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>br.com.edras.picpaysimplificado.PicpaySimplificadoApplication</param>
+                        <param>br.com.edras.picpaysimplificado.client.*</param>
+                        <param>br.com.edras.picpaysimplificado.domain.*</param>
+                        <param>br.com.edras.picpaysimplificado.dto.*</param>
+                        <param>br.com.edras.picpaysimplificado.exception.*</param>
+                        <param>br.com.edras.picpaysimplificado.postman.*</param>
+                        <param>br.com.edras.picpaysimplificado.security.JwtService</param>
+                        <param>br.com.edras.picpaysimplificado.security.SecurityConfig</param>
+                        <param>br.com.edras.picpaysimplificado.security.UserDetailsImplementation</param>
+                        <param>br.com.edras.picpaysimplificado.security.UserDetailsServiceImplementation</param>
+                        <param>br.com.edras.picpaysimplificado.validation.*</param>
+                    </excludedClasses>
+                </configuration>
             </plugin>
 
         </plugins>
