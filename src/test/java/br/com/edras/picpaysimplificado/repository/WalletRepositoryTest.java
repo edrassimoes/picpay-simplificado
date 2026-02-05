@@ -6,7 +6,6 @@ import br.com.edras.picpaysimplificado.domain.Wallet;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.WalletFixtures;
-import br.com.edras.picpaysimplificado.integration.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class WalletRepositoryTest extends AbstractIntegrationTest {
+public class WalletRepositoryTest {
 
     @Autowired
     private WalletRepository walletRepository;

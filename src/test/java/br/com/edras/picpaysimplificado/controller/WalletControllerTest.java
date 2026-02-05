@@ -90,7 +90,7 @@ public class WalletControllerTest {
             """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message")
-                        .value("must be greater than 0"));
+                        .value("Erro de validação: must be greater than 0"));
     }
 
     @Test
