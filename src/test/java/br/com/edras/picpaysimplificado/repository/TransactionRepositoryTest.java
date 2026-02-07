@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @DataJpaTest
 class TransactionRepositoryTest {
 
@@ -35,7 +37,7 @@ class TransactionRepositoryTest {
 
         Transaction transaction1 = new Transaction(100.0, user1, user2, LocalDateTime.now(), TransactionStatus.COMPLETED);
         Transaction transaction2 = new Transaction(50.0, user2, user1, LocalDateTime.now(), TransactionStatus.COMPLETED);
-        Transaction transaction3 = new Transaction(25.0, user3, user2, LocalDateTime.now(), TransactionStatus.COMPLETED); // user1 não participa
+        Transaction transaction3 = new Transaction(25.0, user3, user2, LocalDateTime.now(), TransactionStatus.COMPLETED);
 
         entityManager.persist(transaction1);
         entityManager.persist(transaction2);
