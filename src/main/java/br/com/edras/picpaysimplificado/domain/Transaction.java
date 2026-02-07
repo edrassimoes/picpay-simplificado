@@ -23,7 +23,7 @@ public class Transaction {
     @JoinColumn(name = "payee_id")
     private User payee;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -31,11 +31,11 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Double amount, User payer, User payee, LocalDateTime timestamp, TransactionStatus status) {
+    public Transaction(Double amount, User payer, User payee, LocalDateTime createdAt, TransactionStatus status) {
         this.amount = amount;
         this.payer = payer;
         this.payee = payee;
-        this.timestamp = timestamp;
+        this.createdAt = createdAt;
         this.status = status;
     }
 
@@ -71,12 +71,12 @@ public class Transaction {
         this.payee = payee;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setCreatedAt(LocalDateTime timestamp) {
+        this.createdAt = timestamp;
     }
 
     public TransactionStatus getStatus() {

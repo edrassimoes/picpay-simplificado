@@ -25,7 +25,7 @@ public class TransactionResponseDTO {
         this.payeeId = transaction.getPayee().getId();
         this.payeeName = transaction.getPayee().getName();
         this.amount = transaction.getAmount();
-        this.timestamp = transaction.getTimestamp();
+        this.timestamp = transaction.getCreatedAt();
         this.transactionStatus = transaction.getStatus();
     }
 

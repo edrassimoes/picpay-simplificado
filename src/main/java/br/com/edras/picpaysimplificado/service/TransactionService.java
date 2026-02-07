@@ -97,7 +97,7 @@ public class TransactionService {
         transaction.setAmount(dto.getAmount());
         transaction.setPayer(payer);
         transaction.setPayee(payee);
-        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setCreatedAt(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.PENDING);
         Transaction savedTransaction = transactionRepository.save(transaction);
 
@@ -154,7 +154,7 @@ public class TransactionService {
         transaction.setAmount(dto.getAmount());
         transaction.setPayer(payer);
         transaction.setPayee(payee);
-        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setCreatedAt(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.PENDING);
         Transaction savedTransaction = transactionRepository.save(transaction);
 

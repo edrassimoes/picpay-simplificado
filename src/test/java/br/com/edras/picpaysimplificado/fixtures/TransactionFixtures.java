@@ -19,7 +19,7 @@ public class TransactionFixtures {
         transaction.setAmount(100.0);
         transaction.setPayer(payer);
         transaction.setPayee(payee);
-        transaction.setTimestamp(LocalDateTime.now());
+        transaction.setCreatedAt(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.AUTHORIZED);
         return transaction;
     }
