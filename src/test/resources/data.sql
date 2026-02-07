@@ -27,17 +27,17 @@ INSERT INTO tb_wallets (balance, user_id) VALUES (2500.00, 3);
 INSERT INTO tb_wallets (balance, user_id) VALUES (3000.00, 4);
 
 -- Transações
-INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status)
+INSERT INTO tb_transactions (amount, payer_id, payee_id, createdAt, status)
 VALUES (100.00, 1, 2, '2024-12-01T10:30:00', 'COMPLETED');
 
-INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status)
+INSERT INTO tb_transactions (amount, payer_id, payee_id, createdAt, status)
 VALUES (50.00, 2, 1, '2024-12-01T14:15:00', 'COMPLETED');
 
-INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status)
+INSERT INTO tb_transactions (amount, payer_id, payee_id, createdAt, status)
 VALUES (75.50, 1, 3, '2024-12-02T09:00:00', 'COMPLETED');
 
-INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status)
+INSERT INTO tb_transactions (amount, payer_id, payee_id, createdAt, status)
 VALUES (150.00, 2, 3, '2024-12-03T11:20:00', 'FAILED');
 
-INSERT INTO tb_transactions (amount, payer_id, payee_id, timestamp, status)
+INSERT INTO tb_transactions (amount, payer_id, payee_id, createdAt, status)
 VALUES (25.00, 2, 3, '2024-12-04T08:00:00', 'PENDING');
