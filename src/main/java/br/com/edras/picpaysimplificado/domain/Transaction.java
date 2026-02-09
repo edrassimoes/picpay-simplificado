@@ -23,6 +23,7 @@ public class Transaction {
     @JoinColumn(name = "payee_id")
     private User payee;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
