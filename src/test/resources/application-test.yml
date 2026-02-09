@@ -1,6 +1,10 @@
-spring.datasource.url=jdbc:tc:postgresql:16:///picpay
-spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16:///picpay
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
 
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
