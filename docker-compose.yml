@@ -1,0 +1,26 @@
+services:
+  picpay-simplificado:
+    image: picpay-api:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: picpay-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-postgres
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+  db-postgres:
+    image: postgres:16
+    container_name: db-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
