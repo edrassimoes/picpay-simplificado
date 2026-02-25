@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -43,26 +42,7 @@ public class SecurityConfig {
     public static final String SECURITY = "bearerAuth";
 
     @Bean
-    @Profile("dev")
-    SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer(
-                        conf -> conf.jwt(Customizer.withDefaults()));
-
-        return http.build();
-    }
-
-    @Bean
-    SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -76,8 +56,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer(
-                        conf -> conf.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
