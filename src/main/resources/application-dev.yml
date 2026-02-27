@@ -11,3 +11,10 @@ spring:
 
   jpa:
     show-sql: true
+
+# Spring Boot Actuator Setup
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
