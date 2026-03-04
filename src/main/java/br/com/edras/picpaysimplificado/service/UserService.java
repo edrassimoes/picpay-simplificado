@@ -13,6 +13,8 @@ import br.com.edras.picpaysimplificado.repository.CommonUserRepository;
 import br.com.edras.picpaysimplificado.repository.MerchantUserRepository;
 import br.com.edras.picpaysimplificado.repository.TransactionRepository;
 import br.com.edras.picpaysimplificado.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,18 +93,21 @@ public class UserService {
         return new UserResponseDTO(savedUser);
     }
 
+    @Cacheable("users:list")
     public List<UserResponseDTO> findAllUsers() {
         return userRepository.findAll().stream()
                 .map(UserResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "users", key = "#id")
     public UserResponseDTO findUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return new UserResponseDTO(user);
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Transactional
     public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) {
         User existingUser = userRepository.findById(id)
@@ -129,6 +134,7 @@ public class UserService {
         return new UserResponseDTO(updatedUser);
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Transactional
     public void deleteUserById(Long id) {
         if (!userRepository.existsById(id)) {
