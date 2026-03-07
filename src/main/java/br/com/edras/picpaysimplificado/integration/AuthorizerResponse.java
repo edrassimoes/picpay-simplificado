@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.client;
+package br.com.edras.picpaysimplificado.integration;
 
 public class AuthorizerResponse {
     

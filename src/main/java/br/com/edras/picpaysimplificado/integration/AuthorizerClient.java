@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.client;
+package br.com.edras.picpaysimplificado.integration;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

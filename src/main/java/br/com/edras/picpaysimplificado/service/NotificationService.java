@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.service;
 
-import br.com.edras.picpaysimplificado.client.NotificationClient;
-import br.com.edras.picpaysimplificado.client.NotificationRequest;
+import br.com.edras.picpaysimplificado.integration.NotificationClient;
+import br.com.edras.picpaysimplificado.integration.NotificationRequest;
 import br.com.edras.picpaysimplificado.entity.Transaction;
 import org.springframework.stereotype.Service;
 

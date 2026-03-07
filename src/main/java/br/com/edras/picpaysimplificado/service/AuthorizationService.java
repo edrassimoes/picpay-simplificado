@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.service;
 
-import br.com.edras.picpaysimplificado.client.AuthorizerClient;
-import br.com.edras.picpaysimplificado.client.AuthorizerResponse;
+import br.com.edras.picpaysimplificado.integration.AuthorizerClient;
+import br.com.edras.picpaysimplificado.integration.AuthorizerResponse;
 import br.com.edras.picpaysimplificado.entity.enums.TransactionStatus;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
