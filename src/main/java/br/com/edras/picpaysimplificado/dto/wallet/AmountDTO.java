@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.dto.wallet;
 
-import br.com.edras.picpaysimplificado.domain.Wallet;
+import br.com.edras.picpaysimplificado.entity.Wallet;
 import jakarta.validation.constraints.Positive;
 
 public class AmountDTO {

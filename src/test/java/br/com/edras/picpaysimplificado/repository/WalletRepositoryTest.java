@@ -1,8 +1,8 @@
 package br.com.edras.picpaysimplificado.repository;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
-import br.com.edras.picpaysimplificado.domain.MerchantUser;
-import br.com.edras.picpaysimplificado.domain.Wallet;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
+import br.com.edras.picpaysimplificado.entity.MerchantUser;
+import br.com.edras.picpaysimplificado.entity.Wallet;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.MerchantUserFixtures;
 import br.com.edras.picpaysimplificado.fixtures.WalletFixtures;

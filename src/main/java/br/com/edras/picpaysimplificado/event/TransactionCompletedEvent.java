@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.event;
 
-import br.com.edras.picpaysimplificado.domain.Transaction;
+import br.com.edras.picpaysimplificado.entity.Transaction;
 
 public class TransactionCompletedEvent {
 

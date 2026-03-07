@@ -1,6 +1,6 @@
-package br.com.edras.picpaysimplificado.domain;
+package br.com.edras.picpaysimplificado.entity;
 
-import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
+import br.com.edras.picpaysimplificado.entity.enums.TransactionStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

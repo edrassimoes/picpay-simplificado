@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.repository;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
 import br.com.edras.picpaysimplificado.fixtures.CommonUserFixtures;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

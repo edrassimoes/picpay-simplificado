@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.fixtures;
 
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.Wallet;
+import br.com.edras.picpaysimplificado.entity.User;
+import br.com.edras.picpaysimplificado.entity.Wallet;
 
 public class WalletFixtures {
 

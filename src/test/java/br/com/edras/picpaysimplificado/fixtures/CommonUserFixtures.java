@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.fixtures;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
 
 public class CommonUserFixtures {
 

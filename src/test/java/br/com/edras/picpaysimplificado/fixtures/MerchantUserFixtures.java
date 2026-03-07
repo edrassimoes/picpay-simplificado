@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.fixtures;
 
-import br.com.edras.picpaysimplificado.domain.MerchantUser;
+import br.com.edras.picpaysimplificado.entity.MerchantUser;
 
 public class MerchantUserFixtures {
 

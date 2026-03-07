@@ -1,6 +1,6 @@
-package br.com.edras.picpaysimplificado.domain;
+package br.com.edras.picpaysimplificado.entity;
 
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 import jakarta.persistence.*;
 
 import java.util.Objects;

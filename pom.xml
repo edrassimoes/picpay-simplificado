@@ -231,7 +231,7 @@
                     <excludedClasses>
                         <param>br.com.edras.picpaysimplificado.PicpaySimplificadoApplication</param>
                         <param>br.com.edras.picpaysimplificado.client.*</param>
-                        <param>br.com.edras.picpaysimplificado.domain.*</param>
+                        <param>br.com.edras.picpaysimplificado.entity.*</param>
                         <param>br.com.edras.picpaysimplificado.dto.*</param>
                         <param>br.com.edras.picpaysimplificado.exception.*</param>
                         <param>br.com.edras.picpaysimplificado.postman.*</param>

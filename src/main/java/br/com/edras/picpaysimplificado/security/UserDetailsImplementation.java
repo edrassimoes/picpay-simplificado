@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.security;
 
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.User;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.controller;
 
-import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
+import br.com.edras.picpaysimplificado.entity.enums.TransactionStatus;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;

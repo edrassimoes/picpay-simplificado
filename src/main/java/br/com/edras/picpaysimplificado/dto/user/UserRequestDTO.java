@@ -1,15 +1,13 @@
 package br.com.edras.picpaysimplificado.dto.user;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
-import br.com.edras.picpaysimplificado.domain.MerchantUser;
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
+import br.com.edras.picpaysimplificado.entity.MerchantUser;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 import br.com.edras.picpaysimplificado.validation.CNPJ;
 import br.com.edras.picpaysimplificado.validation.CPF;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 public class UserRequestDTO {
 

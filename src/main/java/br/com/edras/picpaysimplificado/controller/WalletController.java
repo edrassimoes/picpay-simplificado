@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.controller;
 
-import br.com.edras.picpaysimplificado.domain.Wallet;
+import br.com.edras.picpaysimplificado.entity.Wallet;
 import br.com.edras.picpaysimplificado.dto.wallet.AmountDTO;
 import br.com.edras.picpaysimplificado.dto.wallet.WalletResponseDTO;
 import br.com.edras.picpaysimplificado.service.WalletService;

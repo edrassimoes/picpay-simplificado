@@ -1,8 +1,8 @@
 package br.com.edras.picpaysimplificado.service;
 
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.Wallet;
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.User;
+import br.com.edras.picpaysimplificado.entity.Wallet;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 import br.com.edras.picpaysimplificado.exception.user.UserNotFoundException;
 import br.com.edras.picpaysimplificado.exception.wallet.InsufficientBalanceException;
 import br.com.edras.picpaysimplificado.exception.wallet.InvalidAmountException;

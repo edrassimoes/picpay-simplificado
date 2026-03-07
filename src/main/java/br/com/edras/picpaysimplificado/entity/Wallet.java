@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.domain;
+package br.com.edras.picpaysimplificado.entity;
 
 import jakarta.persistence.*;
 

@@ -1,7 +1,7 @@
 package br.com.edras.picpaysimplificado.dto.user;
 
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.User;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 
 public class UserResponseDTO {
 

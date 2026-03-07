@@ -1,4 +1,4 @@
-package br.com.edras.picpaysimplificado.domain.enums;
+package br.com.edras.picpaysimplificado.entity.enums;
 
 public enum TransactionStatus {
     

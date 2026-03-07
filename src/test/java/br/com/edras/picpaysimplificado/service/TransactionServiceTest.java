@@ -1,9 +1,9 @@
 package br.com.edras.picpaysimplificado.service;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
-import br.com.edras.picpaysimplificado.domain.MerchantUser;
-import br.com.edras.picpaysimplificado.domain.Transaction;
-import br.com.edras.picpaysimplificado.domain.enums.TransactionStatus;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
+import br.com.edras.picpaysimplificado.entity.MerchantUser;
+import br.com.edras.picpaysimplificado.entity.Transaction;
+import br.com.edras.picpaysimplificado.entity.enums.TransactionStatus;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionRequestDTO;
 import br.com.edras.picpaysimplificado.dto.transaction.TransactionResponseDTO;
 import br.com.edras.picpaysimplificado.exception.transaction.MerchantCannotTransferException;

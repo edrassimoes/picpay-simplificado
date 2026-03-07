@@ -1,9 +1,9 @@
 package br.com.edras.picpaysimplificado.service;
 
-import br.com.edras.picpaysimplificado.domain.CommonUser;
-import br.com.edras.picpaysimplificado.domain.MerchantUser;
-import br.com.edras.picpaysimplificado.domain.User;
-import br.com.edras.picpaysimplificado.domain.enums.UserType;
+import br.com.edras.picpaysimplificado.entity.CommonUser;
+import br.com.edras.picpaysimplificado.entity.MerchantUser;
+import br.com.edras.picpaysimplificado.entity.User;
+import br.com.edras.picpaysimplificado.entity.enums.UserType;
 import br.com.edras.picpaysimplificado.dto.user.UserRequestDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserResponseDTO;
 import br.com.edras.picpaysimplificado.dto.user.UserUpdateDTO;

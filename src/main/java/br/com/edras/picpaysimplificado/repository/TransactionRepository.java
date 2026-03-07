@@ -1,6 +1,6 @@
 package br.com.edras.picpaysimplificado.repository;
 
-import br.com.edras.picpaysimplificado.domain.Transaction;
+import br.com.edras.picpaysimplificado.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
